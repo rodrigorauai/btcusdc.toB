@@ -34,7 +34,7 @@ class CoinbaseController extends Controller
         # Vende Bitcoin e compra USDCoin
         $response = $this->client->placeOrder([
             'size'       => $value,
-            // 'price'      => 0.1,
+            'price'      => 0.1,
             'type'       => 'market',
             'side'       => 'sell',
             'product_id' => 'BTC-USD'
@@ -55,22 +55,9 @@ class CoinbaseController extends Controller
 
     public function orders()
     {
-        // dd($this->client->conversion([
-        //     'from' => 'USDC',
-        //     'to' => 'USDC',
-        //     'amount' => 1,
-        // ]));
-
         return $this->client->getOrders([
             'status' => 'all',
         ]);
-
-        // "filled_size": "0.02439452"
-        // "executed_value": "197.4629058112000000"
-        # filled_size -> Valor em BTC
-        # executed_value -> Valor em USDC
-
-        return $this->client->getAccount("d3de80f0-3c8b-4a92-95eb-97602e49817a");
     }    
 
     private function setUpConfiguration()
