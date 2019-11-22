@@ -32,15 +32,22 @@ class CoinbaseController extends Controller
     public function conversor($value, $currency = 'BTC')
     {
         # Vende Bitcoin e compra USDCoin
-        $response = $this->client->placeOrder([
-            'size'       => $value,
-            'price'      => 0.1,
-            'type'       => 'market',
-            'side'       => 'sell',
-            'product_id' => 'BTC-USD'
-        ]);
-
-        return $response;
+        if ($value > 0.001) {
+            $response = $this->client->placeOrder([
+                'size'       => $value,
+                'price'      => 0.1,
+                'type'       => 'market',
+                'side'       => 'sell',
+                'product_id' => 'BTC-USD'
+            ]);
+    
+            return $response;
+        } else {
+            // return response()->json([
+            //     'error' => 'Value is not enough'
+            // ])
+        }
+        
     }
 
     public function order($order_id)

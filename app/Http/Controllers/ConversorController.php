@@ -8,23 +8,24 @@ class ConversorController extends Controller
 {
     private $coinbaseController = 'App\Http\Controllers\CoinbaseController';
 
-    public function conversor(Request $request)
+    public function conversor()
     {
-        # Validar currency, value
-        $data = $request->only('currency');
-
         $btc_wallet = $this->getBtcWallet();
         $value = $btc_wallet["available"];
 
         try {
-            $response = app($this->coinbaseController)->conversor($value, $data["currency"]);
+            $response = app($this->coinbaseController)->conversor($value, "BTC");
             sleep(3);
-            return $this->getOrder($response["id"]);
+            if ($response) {
+                return $this->getOrder($response["id"]);
+            } else {
+                return;
+            }
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'Error: '.$e->getMessage()
             ]);
-        }        
+        }
     }
 
     public function getBtcWallet()
@@ -57,7 +58,7 @@ class ConversorController extends Controller
     {
         try {
             $response = app($this->coinbaseController)->order($id);
-            $this->split();
+            // $this->split();
             return $response;
         } catch (Exception $e) {
             return response()->json([
@@ -78,7 +79,7 @@ class ConversorController extends Controller
         # Dividir em 70%
         $value70 = 0.7 * $size;
         
-        dd($value30 + $value70);
+        // dd($value30 + $value70);
         return floatval($value);
     }
 }
