@@ -29,23 +29,28 @@ class CoinbaseController extends Controller
         
     }
 
-    private function setUpConfiguration()
+    public function conversor($value, $currency = 'BTC')
     {
-        $this->configuration = Configuration::apiKey($this->api_key, $this->api_secret, $this->passphrase);
-    }
-    
-    private function setUpClient()
-    {
-        $this->client = Client::create($this->configuration);
+        # Vende Bitcoin e compra USDCoin
+        $response = $this->client->placeOrder([
+            'size'       => $value,
+            // 'price'      => 0.1,
+            'type'       => 'market',
+            'side'       => 'sell',
+            'product_id' => 'BTC-USD'
+        ]);
+
+        return $response;
     }
 
-    public function index()
+    public function order($order_id)
     {
-        // dd($client->getProductTrades("BTC-USD"));
+        return $this->client->getOrder($order_id);
+    }
 
-        # Carteiras (wallets):
-        // dd($this->client->getAccounts());
-        return $this->client->getProductTrades("BTC-USD");
+    public function getWallet($id)
+    {
+        return $this->client->getAccount($id);
     }
 
     public function orders()
@@ -66,31 +71,15 @@ class CoinbaseController extends Controller
         # executed_value -> Valor em USDC
 
         return $this->client->getAccount("d3de80f0-3c8b-4a92-95eb-97602e49817a");
-    }
+    }    
 
-    public function order($order_id)
+    private function setUpConfiguration()
     {
-        return $this->client->getOrder($order_id);
+        $this->configuration = Configuration::apiKey($this->api_key, $this->api_secret, $this->passphrase);
     }
-
-    public function conversor($value, $currency = 'BTC')
+    
+    private function setUpClient()
     {
-        # Place a new order:
-        // {
-        //     "size": "0.01",
-        //     "price": "0.100",
-        //     "side": "sell",
-        //     "product_id": "BTC-USD"
-        // }
-        # size: amount of BTC to sell
-        $response = $this->client->placeOrder([
-            'size'       => $value,
-            'price'      => 0.1,
-            'type'       => 'market',
-            'side'       => 'sell',
-            'product_id' => 'BTC-USD'
-        ]);
-
-        return $response;
+        $this->client = Client::create($this->configuration);
     }
 }

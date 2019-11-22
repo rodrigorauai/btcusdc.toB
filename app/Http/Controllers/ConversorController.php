@@ -8,22 +8,18 @@ class ConversorController extends Controller
 {
     private $coinbaseController = 'App\Http\Controllers\CoinbaseController';
 
-    # Recebe dados de sistemas externos
     public function conversor(Request $request)
     {
         # Validar currency, value
-        $data = $request->only('value', 'currency');
+        $data = $request->only('currency');
 
-        // if (strtoupper($data["currency"]) !== "BTC") {
-        //     return response()->json(['error' => 'Currency not avaible']);
-        // }
+        $btc_wallet = $this->getBtcWallet();
+        $value = $btc_wallet["available"];
 
         try {
-            $response = app($this->coinbaseController)->conversor($data["value"], $data["currency"]);
-            // dd($response["id"]);
-            sleep(5);
-            dd($this->getOrder($response["id"]));
-            // return $response;
+            $response = app($this->coinbaseController)->conversor($value, $data["currency"]);
+            sleep(3);
+            return $this->getOrder($response["id"]);
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'Error: '.$e->getMessage()
@@ -33,12 +29,23 @@ class ConversorController extends Controller
 
     public function getBtcWallet()
     {
-        return 'BTC Wallet';
+        # Sandbox
+        $id_wallet = '56221037-3119-4704-9c9c-26d269a809f5';
+        
+        # Coinbase Pro
+        // $id_wallet = '';
+
+        return app($this->coinbaseController)->getWallet($id_wallet);
     }
 
     public function getUsdcWallet()
     {
-        return 'USDC Wallet';
+        # Sandbox
+        $id_wallet = '68b16534-5c72-4915-9232-f6d4c1888d19';
+
+        # Coinbase Pro
+        // $id_wallet = '';
+        return app($this->coinbaseController)->getWallet($id_wallet);
     }
 
     public function orders()
@@ -46,13 +53,32 @@ class ConversorController extends Controller
         return app($this->coinbaseController)->orders();
     }
 
-    private function x($value): float {
-        return floatval($value);
-    }
-
     private function getOrder($id)
     {
-        $response = app($this->coinbaseController)->order($id);
-        return $response;
+        try {
+            $response = app($this->coinbaseController)->order($id);
+            $this->split();
+            return $response;
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'Error: '.$e->getMessage()
+            ]);
+        }
+    }
+
+    private function split(): float 
+    {
+        # Pegar o valor da carteira USDC
+        $wallet = $this->getUsdcWallet();
+        $size = $wallet["available"];
+
+        # Dividir em 30%
+        $value30 = 0.3 * $size;
+        
+        # Dividir em 70%
+        $value70 = 0.7 * $size;
+        
+        dd($value30 + $value70);
+        return floatval($value);
     }
 }
