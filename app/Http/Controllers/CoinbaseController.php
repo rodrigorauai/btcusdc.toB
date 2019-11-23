@@ -32,7 +32,7 @@ class CoinbaseController extends Controller
     public function conversor($value, $currency = 'BTC')
     {
         # Vende Bitcoin e compra USDCoin
-        if ($value > 0.001) {
+        if ($value >= 0.001) {
             $response = $this->client->placeOrder([
                 'size'       => $value,
                 'price'      => 0.1,
