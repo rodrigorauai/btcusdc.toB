@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $schedule->command('conversor:currency')
+                 ->withoutOverlapping(1)
                  ->everyMinute();
     }
 
