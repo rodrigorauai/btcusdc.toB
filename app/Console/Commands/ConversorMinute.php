@@ -40,12 +40,14 @@ class ConversorMinute extends Command
     {
         //
         $dt = Carbon::now();
-        $x = 60/5;
         do {
-            echo "Começou a execução\n";
+            $this->info('Demo:Cron Cummand Run successfully!');
+            echo "Conversor Running\n";
             app('App\Http\Controllers\ConversorController')->conversor();
-            echo "Converted\n";
-            time_sleep_until($dt->addSeconds(15)->timestamp);
-        } while($x-- > 0);
+            echo "Conversor Done\n";
+            // time_sleep_until($dt->addSeconds(10)->timestamp);
+            sleep(10);
+            continue;
+        } while(true);
     }
 }
