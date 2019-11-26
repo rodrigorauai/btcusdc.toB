@@ -47,7 +47,6 @@ class CoinbaseController extends Controller
             //     'error' => 'Value is not enough'
             // ])
         }
-        
     }
 
     public function order($order_id)

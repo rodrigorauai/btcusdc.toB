@@ -7,18 +7,26 @@ use Illuminate\Http\Request;
 class ConversorController extends Controller
 {
     private $coinbaseController = 'App\Http\Controllers\CoinbaseController';
+    private $logController = 'App\Http\Controllers\LogController';
 
     public function conversor()
     {
         $btc_wallet = $this->getBtcWallet();
         $value = $btc_wallet["available"];
+        $value = 0.001;
 
         try {
             $response = app($this->coinbaseController)->conversor($value, "BTC");
             sleep(3);
             if ($response) {
-                return $this->getOrder($response["id"]);
+                # Pega o order ja com o status de settled
+                $getOrderResponse = $this->getOrder($response["id"]);
+                # Salvar um log
+                $this->saveOrderLog($getOrderResponse);
+
+                return $getOrderResponse;
             } else {
+                # Quando não há nada na carteira
                 return;
             }
         } catch(Exception $e) {
@@ -52,6 +60,14 @@ class ConversorController extends Controller
     public function orders()
     {
         return app($this->coinbaseController)->orders();
+    }
+
+    private function saveOrderLog($response)
+    {
+        $jsonLog = json_encode($response);
+        $request = json_decode($jsonLog);
+
+        app($this->logController)->store($request);
     }
 
     private function getOrder($id)
