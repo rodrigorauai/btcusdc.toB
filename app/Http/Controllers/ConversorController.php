@@ -13,7 +13,6 @@ class ConversorController extends Controller
     {
         $btc_wallet = $this->getBtcWallet();
         $value = $btc_wallet["available"];
-        $value = 0.001;
 
         try {
             $response = app($this->coinbaseController)->conversor($value, "BTC");
@@ -36,13 +35,18 @@ class ConversorController extends Controller
         }
     }
 
+    public function getWallets()
+    {
+        return app($this->coinbaseController)->getWallets();
+    }
+
     public function getBtcWallet()
     {
         # Sandbox
-        $id_wallet = '56221037-3119-4704-9c9c-26d269a809f5';
+        // $id_wallet = '56221037-3119-4704-9c9c-26d269a809f5';
         
         # Coinbase Pro
-        // $id_wallet = '';
+        $id_wallet = 'c3791fc3-5627-4fc9-a6a5-0ea73a11bea7';
 
         return app($this->coinbaseController)->getWallet($id_wallet);
     }
@@ -50,10 +54,10 @@ class ConversorController extends Controller
     public function getUsdcWallet()
     {
         # Sandbox
-        $id_wallet = '68b16534-5c72-4915-9232-f6d4c1888d19';
+        // $id_wallet = '68b16534-5c72-4915-9232-f6d4c1888d19';
 
         # Coinbase Pro
-        // $id_wallet = '';
+        $id_wallet = 'd3de80f0-3c8b-4a92-95eb-97602e49817a';
         return app($this->coinbaseController)->getWallet($id_wallet);
     }
 

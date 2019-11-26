@@ -15,18 +15,17 @@ class CoinbaseController extends Controller
 
     public function __construct() {
         # Chaves default
-        // $this->api_key = env('COINBASE_API_KEY');
-        // $this->api_secret = env('COINBASE_SECRET');
-        // $this->passphrase = env('COINBASE_PASSPHRASE');
+        $this->api_key = env('COINBASE_API_KEY');
+        $this->api_secret = env('COINBASE_SECRET');
+        $this->passphrase = env('COINBASE_PASSPHRASE');
 
         # Chaves sandbox
-        $this->api_key = '010e7508032e404c54ca850f8da4ea26';
-        $this->api_secret = 'ek/fvO7YanVTgU6shT6eljUaGBQU3VB6ERv1ZfmPYjrTvqUXgg7s8Ng9mOkuuk3rzz7KRbTuyrW7lQNf/8IbGw==';
-        $this->passphrase = 'ngucn0yyqpo';
+        // $this->api_key = '010e7508032e404c54ca850f8da4ea26';
+        // $this->api_secret = 'ek/fvO7YanVTgU6shT6eljUaGBQU3VB6ERv1ZfmPYjrTvqUXgg7s8Ng9mOkuuk3rzz7KRbTuyrW7lQNf/8IbGw==';
+        // $this->passphrase = 'ngucn0yyqpo';
 
         $this->setUpConfiguration();
         $this->setUpClient();
-        
     }
 
     public function conversor($value, $currency = 'BTC')
@@ -38,7 +37,7 @@ class CoinbaseController extends Controller
                 'price'      => 0.1,
                 'type'       => 'market',
                 'side'       => 'sell',
-                'product_id' => 'BTC-USD'
+                'product_id' => 'BTC-USDC'
             ]);
     
             return $response;
@@ -64,7 +63,12 @@ class CoinbaseController extends Controller
         return $this->client->getOrders([
             'status' => 'all',
         ]);
-    }    
+    }
+
+    public function getWallets()
+    {
+        return $this->client->getAccounts();
+    }
 
     private function setUpConfiguration()
     {
