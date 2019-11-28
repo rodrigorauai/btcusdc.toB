@@ -38,6 +38,7 @@ class CoinbaseController extends Controller
                 'type'       => 'market',
                 'side'       => 'sell',
                 'product_id' => 'BTC-USDC'
+                // 'product_id' => 'BTC-USD'
             ]);
     
             return $response;
@@ -51,6 +52,36 @@ class CoinbaseController extends Controller
     public function order($order_id)
     {
         return $this->client->getOrder($order_id);
+    }
+
+    public function withdrawToWallet30($value)
+    {
+        try {
+            $response = $this->client->withdrawalTo([
+                'amount'              => $value,
+                'currency'            => 'USDC',
+                'crypto_address'      => '0xf66062e0B72AE4238AD139865DdBEb239eCA3330'
+            ]);
+            
+            return $response;
+        } catch(Exception $e) {
+            // dump('error in 30');
+        }
+    }
+
+    public function withdrawToWallet70($value)
+    {
+        try {
+            $response = $this->client->withdrawalTo([
+                'amount'              => $value,
+                'currency'            => 'USDC',
+                'crypto_address'      => '0xA8F3576Cd8f745D3a5411De27D9EbFA3910B5aa0'
+            ]);
+
+            return $response;
+        } catch(Exception $e) {
+            // dump('error in 70');
+        }
     }
 
     public function getWallet($id)

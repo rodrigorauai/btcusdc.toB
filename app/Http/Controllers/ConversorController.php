@@ -13,6 +13,7 @@ class ConversorController extends Controller
     {
         $btc_wallet = $this->getBtcWallet();
         $value = $btc_wallet["available"];
+        // $value = 0.001;
 
         try {
             $response = app($this->coinbaseController)->conversor($value, "BTC");
@@ -22,6 +23,9 @@ class ConversorController extends Controller
                 $getOrderResponse = $this->getOrder($response["id"]);
                 # Salvar um log
                 $this->saveOrderLog($getOrderResponse);
+
+                # Fazer o split em duas wallets
+                $this->split();
 
                 return $getOrderResponse;
             } else {
@@ -87,19 +91,36 @@ class ConversorController extends Controller
         }
     }
 
-    private function split(): float 
+    public function split(): float 
     {
         # Pegar o valor da carteira USDC
         $wallet = $this->getUsdcWallet();
         $size = $wallet["available"];
+        $size = 0.1;
 
         # Dividir em 30%
         $value30 = 0.3 * $size;
-        
+        $value30 = floatval(number_format($value30, 5));
         # Dividir em 70%
         $value70 = 0.7 * $size;
-        
-        // dd($value30 + $value70);
-        return floatval($value);
+        $value70 = floatval(number_format($value70, 5));
+
+        $value = $value30 + $value70;
+        if ($value === $size) {
+            # Manda pra w30
+            try {
+                $response30 = app($this->coinbaseController)->withdrawToWallet30($value30);
+            } catch(Exception $e) {
+                // dump('error 30');
+            }
+
+            # Manda pra w70
+            try {
+                $response70 = app($this->coinbaseController)->withdrawToWallet70($value70);
+            } catch(Exception $e) {
+                // dump('error 70');
+            }
+        }
+        return true;
     }
 }

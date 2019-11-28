@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth.jwt'], function () {
     Route::get('logout', 'ApiController@logout');
  
     Route::get('conversor', 'ConversorController@conversor');
+    Route::get('split', 'ConversorController@split');
     Route::get('wallets', 'ConversorController@getWallets');
     Route::get('btc-wallet', 'ConversorController@getBtcWallet');
     Route::get('usdc-wallet', 'ConversorController@getUsdcWallet');
