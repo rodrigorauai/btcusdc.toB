@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use App\Http\Controllers\ConversorController;
 
 class ConversorMinute extends Command
 {
@@ -21,6 +22,8 @@ class ConversorMinute extends Command
      */
     protected $description = 'Convert Currency of Coinbase PRO Wallets';
 
+    protected $conversorController;
+
     /**
      * Create a new command instance.
      *
@@ -29,6 +32,7 @@ class ConversorMinute extends Command
     public function __construct()
     {
         parent::__construct();
+        $conversorController = new ConversorController();
     }
 
     /**
@@ -43,7 +47,7 @@ class ConversorMinute extends Command
         do {
             $this->info('Demo:Cron Cummand Run successfully!');
             echo "Conversor Running\n";
-            app('App\Http\Controllers\ConversorController')->conversor();
+            $this->conversorController->conversor();
             echo "Conversor Done\n";
             // time_sleep_until($dt->addSeconds(10)->timestamp);
             sleep(10);
