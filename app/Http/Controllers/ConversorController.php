@@ -3,11 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\CoinbaseController;
+use App\Http\Controllers\LogController;
 
 class ConversorController extends Controller
 {
-    private $coinbaseController = 'App\Http\Controllers\CoinbaseController';
-    private $logController = 'App\Http\Controllers\LogController';
+    // private $coinbaseController = 'App\Http\Controllers\CoinbaseController';
+    private $logController;
+    private $coinbaseController;
+
+    public function __construct()
+    {
+        $coinbaseController = new CoinbaseController();
+        $logController = new LogController();
+    }
 
     public function conversor()
     {
@@ -16,7 +25,7 @@ class ConversorController extends Controller
         // $value = 0.001;
 
         try {
-            $response = app($this->coinbaseController)->conversor($value, "BTC");
+            $response = $this->coinbaseController->conversor($value, "BTC");
             sleep(3);
             if ($response) {
                 # Pega o order ja com o status de settled
@@ -41,7 +50,7 @@ class ConversorController extends Controller
 
     public function getWallets()
     {
-        return app($this->coinbaseController)->getWallets();
+        return $this->coinbaseController->getWallets();
     }
 
     public function getBtcWallet()
@@ -52,7 +61,7 @@ class ConversorController extends Controller
         # Coinbase Pro
         $id_wallet = 'c3791fc3-5627-4fc9-a6a5-0ea73a11bea7';
 
-        return app($this->coinbaseController)->getWallet($id_wallet);
+        return $this->coinbaseController->getWallet($id_wallet);
     }
 
     public function getUsdcWallet()
@@ -62,17 +71,17 @@ class ConversorController extends Controller
 
         # Coinbase Pro
         $id_wallet = 'd3de80f0-3c8b-4a92-95eb-97602e49817a';
-        return app($this->coinbaseController)->getWallet($id_wallet);
+        return $this->coinbaseController->getWallet($id_wallet);
     }
 
     public function orders()
     {
-        return app($this->coinbaseController)->orders();
+        return $this->coinbaseController->orders();
     }
 
     public function products()
     {
-        return app($this->coinbaseController)->products();
+        return $this->coinbaseController->products();
     }
 
     private function saveOrderLog($response)
@@ -80,13 +89,13 @@ class ConversorController extends Controller
         $jsonLog = json_encode($response);
         $request = json_decode($jsonLog);
 
-        app($this->logController)->store($request);
+        $this->logController->store($request);
     }
 
     private function getOrder($id)
     {
         try {
-            $response = app($this->coinbaseController)->order($id);
+            $response = $this->coinbaseController->order($id);
             // $this->split();
             return $response;
         } catch (Exception $e) {
@@ -116,14 +125,14 @@ class ConversorController extends Controller
         if ($value === $size) {
             # Manda pra w30
             try {
-                $response30 = app($this->coinbaseController)->withdrawToWallet30($value30);
+                $response30 = $this->coinbaseController->withdrawToWallet30($value30);
             } catch(Exception $e) {
                 // dump('error 30');
             }
 
             # Manda pra w70
             try {
-                $response70 = app($this->coinbaseController)->withdrawToWallet70($value70);
+                $response70 = $this->coinbaseController->withdrawToWallet70($value70);
             } catch(Exception $e) {
                 // dump('error 70');
             }
