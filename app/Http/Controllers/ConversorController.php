@@ -9,13 +9,13 @@ use App\Http\Controllers\LogController;
 class ConversorController extends Controller
 {
     // private $coinbaseController = 'App\Http\Controllers\CoinbaseController';
-    private $logController;
-    private $coinbaseController;
+    public $logController;
+    protected $coinbaseController;
 
     public function __construct()
     {
-        $coinbaseController = new CoinbaseController();
-        $logController = new LogController();
+        $this->coinbaseController = new CoinbaseController();
+        $this->logController = new LogController();
     }
 
     public function conversor()
@@ -60,7 +60,6 @@ class ConversorController extends Controller
         
         # Coinbase Pro
         $id_wallet = 'c3791fc3-5627-4fc9-a6a5-0ea73a11bea7';
-
         return $this->coinbaseController->getWallet($id_wallet);
     }
 

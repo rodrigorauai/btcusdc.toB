@@ -32,7 +32,7 @@ class ConversorMinute extends Command
     public function __construct()
     {
         parent::__construct();
-        $conversorController = new ConversorController();
+        $this->conversorController = new ConversorController();
     }
 
     /**
@@ -43,12 +43,11 @@ class ConversorMinute extends Command
     public function handle()
     {
         //
-        $conversorController = new ConversorController();
         $dt = Carbon::now();
         do {
             $this->info('Demo:Cron Cummand Run successfully!');
             echo "Conversor Running\n";
-            $conversorController->conversor();
+            $this->conversorController->conversor();
             echo "Conversor Done\n";
             // time_sleep_until($dt->addSeconds(10)->timestamp);
             sleep(10);
