@@ -15,9 +15,9 @@ class CoinbaseController extends Controller
 
     public function __construct() {
         # Chaves default
-        $this->api_key = env('COINBASE_API_KEY');
-        $this->api_secret = env('COINBASE_SECRET');
-        $this->passphrase = env('COINBASE_PASSPHRASE');
+        $this->api_key = config('coinbase.api_key');
+        $this->api_secret = config('coinbase.secret');
+        $this->passphrase = config('coinbase.passphrase');
 
         # Chaves sandbox
         // $this->api_key = '010e7508032e404c54ca850f8da4ea26';
