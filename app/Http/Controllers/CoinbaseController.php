@@ -96,6 +96,11 @@ class CoinbaseController extends Controller
         ]);
     }
 
+    public function products()
+    {
+        return $this->client->getProducts();
+    }
+
     public function getWallets()
     {
         return $this->client->getAccounts();

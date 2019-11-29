@@ -70,6 +70,11 @@ class ConversorController extends Controller
         return app($this->coinbaseController)->orders();
     }
 
+    public function products()
+    {
+        return app($this->coinbaseController)->products();
+    }
+
     private function saveOrderLog($response)
     {
         $jsonLog = json_encode($response);
@@ -96,15 +101,17 @@ class ConversorController extends Controller
         # Pegar o valor da carteira USDC
         $wallet = $this->getUsdcWallet();
         $size = $wallet["available"];
-        $size = 0.1;
+
+        # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
+        $size = floatval(number_format($size, 8));
 
         # Dividir em 30%
         $value30 = 0.3 * $size;
-        $value30 = floatval(number_format($value30, 5));
+        $value30 = floatval(number_format($value30, 8));
         # Dividir em 70%
         $value70 = 0.7 * $size;
-        $value70 = floatval(number_format($value70, 5));
-
+        $value70 = floatval(number_format($value70, 8));
+        
         $value = $value30 + $value70;
         if ($value === $size) {
             # Manda pra w30
@@ -120,6 +127,8 @@ class ConversorController extends Controller
             } catch(Exception $e) {
                 // dump('error 70');
             }
+        } else {
+            return false;
         }
         return true;
     }
