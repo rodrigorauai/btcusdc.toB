@@ -22,7 +22,6 @@ class ConversorController extends Controller
     {
         $btc_wallet = $this->getBtcWallet();
         $value = $btc_wallet["available"];
-        // $value = 0.001;
 
         try {
             $response = $this->coinbaseController->conversor($value, "BTC");
