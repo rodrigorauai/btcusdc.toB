@@ -33,7 +33,7 @@ class ConversorController extends Controller
                 $this->saveOrderLog($getOrderResponse);
 
                 # Fazer o split em duas wallets
-                // $this->split();
+                $this->split();
 
                 return $getOrderResponse;
             } else {
@@ -110,14 +110,14 @@ class ConversorController extends Controller
         $size = $wallet["available"];
 
         # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
-        $size = floatval(number_format($size, 8));
+        $size = floatval(number_format($size, 6));
 
         # Dividir em 30%
         $value30 = 0.3 * $size;
-        $value30 = floatval(number_format($value30, 8));
+        $value30 = floatval(number_format($value30, 6));
         # Dividir em 70%
         $value70 = 0.7 * $size;
-        $value70 = floatval(number_format($value70, 8));
+        $value70 = floatval(number_format($value70, 6));
         
         $value = $value30 + $value70;
         if ($value === $size) {
