@@ -33,7 +33,7 @@ class ConversorController extends Controller
                 $this->saveOrderLog($getOrderResponse);
 
                 # Fazer o split em duas wallets
-                $this->split();
+                // $this->split();
 
                 return $getOrderResponse;
             } else {
@@ -103,7 +103,7 @@ class ConversorController extends Controller
         }
     }
 
-    public function split(): float 
+    public function split() 
     {
         # Pegar o valor da carteira USDC
         $wallet = $this->getUsdcWallet();
