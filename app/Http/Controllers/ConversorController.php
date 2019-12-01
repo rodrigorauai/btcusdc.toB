@@ -33,7 +33,7 @@ class ConversorController extends Controller
                 $this->saveOrderLog($getOrderResponse);
 
                 # Fazer o split em duas wallets
-                $this->split();
+                // $this->split();
 
                 return $getOrderResponse;
             } else {
@@ -120,23 +120,24 @@ class ConversorController extends Controller
         $value70 = floatval(number_format($value70, 6));
         
         $value = $value30 + $value70;
-        if ($value === $size) {
+        // if ($value === $size) {
             # Manda pra w30
-            try {
-                $response30 = $this->coinbaseController->withdrawToWallet30($value30);
-            } catch(Exception $e) {
-                // dump('error 30');
+        try {
+            $response30 = $this->coinbaseController->withdrawToWallet30($value30);
+            if ($response30) {
+                # Manda pra w70
+                try {
+                    $response70 = $this->coinbaseController->withdrawToWallet70($value70);
+                } catch(Exception $e) {
+                    // dump('error 70');
+                }
             }
-
-            # Manda pra w70
-            try {
-                $response70 = $this->coinbaseController->withdrawToWallet70($value70);
-            } catch(Exception $e) {
-                // dump('error 70');
-            }
-        } else {
-            return false;
+        } catch(Exception $e) {
+            // dump('error 30');
         }
+        // } else {
+        //     return false;
+        // }
         return true;
     }
 }
