@@ -48,7 +48,7 @@ class ConversorMinute extends Command
             echo "Conversor Running\n";
             $this->conversorController->conversor();
             echo "Conversor Done\n";
-            sleep(10);
+            sleep(15);
             continue;
         } while(true);
     }
