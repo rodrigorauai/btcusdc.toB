@@ -5,17 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CoinbaseController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\SplitValuesController;
 
 class ConversorController extends Controller
 {
-    // private $coinbaseController = 'App\Http\Controllers\CoinbaseController';
     public $logController;
+    public $splitValuesController;
     protected $coinbaseController;
 
     public function __construct()
     {
         $this->coinbaseController = new CoinbaseController();
         $this->logController = new LogController();
+        $this->splitValuesController = new SplitValuesController();
     }
 
     public function conversor()
@@ -32,8 +34,8 @@ class ConversorController extends Controller
                 # Salvar um log
                 $this->saveOrderLog($getOrderResponse);
 
-                # Fazer o split em duas wallets
-                // $this->split();
+                # Split na carteira
+                $this->splitValues($response["id"]);
 
                 return $getOrderResponse;
             } else {
@@ -45,11 +47,6 @@ class ConversorController extends Controller
                 'error' => 'Error: '.$e->getMessage()
             ]);
         }
-    }
-
-    public function getWallets()
-    {
-        return $this->coinbaseController->getWallets();
     }
 
     public function getBtcWallet()
@@ -72,6 +69,11 @@ class ConversorController extends Controller
         return $this->coinbaseController->getWallet($id_wallet);
     }
 
+    public function getWallets()
+    {
+        return $this->coinbaseController->getWallets();
+    }
+
     public function orders()
     {
         return $this->coinbaseController->orders();
@@ -82,19 +84,51 @@ class ConversorController extends Controller
         return $this->coinbaseController->products();
     }
 
-    private function saveOrderLog($response)
+    public function split($value30, $value70) 
     {
-        $jsonLog = json_encode($response);
-        $request = json_decode($jsonLog);
+        # Manda pra w30
+        $response30 = $this->coinbaseController->withdrawToWallet30($value30);
 
-        $this->logController->store($request);
+        # Manda pra w70
+        $response70 = $this->coinbaseController->withdrawToWallet70($value70);           
+    
+        return true;
+    }
+
+    private function splitValues($order_id)
+    {
+        # Pegar o valor da carteira USDC
+        $wallet = $this->getUsdcWallet();
+        $size = $wallet["available"];
+
+        # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
+        $size = $this->getValueSixDecimal($size);
+
+        # Dividir em 30%
+        $value30 = 0.3 * $size;
+        // $value30 = floatval(number_format($value30, 6));
+
+        # Dividir em 70%
+        $value70 = 0.7 * $size;
+        // $value70 = floatval(number_format($value70, 6));
+
+        # Mandar para duas carteiras
+        $this->split($value30, $value70);
+
+        # Guardar no banco
+        $response = [
+            'id_order' => $order_id,
+            'value30' => $value30,
+            'value70' => $value70,
+        ];
+        $this->saveSplitValues($response);
     }
 
     private function getOrder($id)
     {
         try {
             $response = $this->coinbaseController->order($id);
-            // $this->split();
+
             return $response;
         } catch (Exception $e) {
             return response()->json([
@@ -103,41 +137,24 @@ class ConversorController extends Controller
         }
     }
 
-    public function split() 
+    private function saveOrderLog($response)
     {
-        # Pegar o valor da carteira USDC
-        $wallet = $this->getUsdcWallet();
-        $size = $wallet["available"];
+        $jsonLog = json_encode($response);
+        $request = json_decode($jsonLog);
 
-        # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
-        $size = floatval(number_format($size, 6));
+        $this->logController->store($request);
+    }
 
-        # Dividir em 30%
-        $value30 = 0.3 * $size;
-        $value30 = floatval(number_format($value30, 6));
-        # Dividir em 70%
-        $value70 = 0.7 * $size;
-        $value70 = floatval(number_format($value70, 6));
-        
-        $value = $value30 + $value70;
-        // if ($value === $size) {
-            # Manda pra w30
-        try {
-            $response30 = $this->coinbaseController->withdrawToWallet30($value30);
-            if ($response30) {
-                # Manda pra w70
-                try {
-                    $response70 = $this->coinbaseController->withdrawToWallet70($value70);
-                } catch(Exception $e) {
-                    // dump('error 70');
-                }
-            }
-        } catch(Exception $e) {
-            // dump('error 30');
-        }
-        // } else {
-        //     return false;
-        // }
-        return true;
+    private function saveSplitValues($response)
+    {
+        $jsonLog = json_encode($response);
+        $request = json_decode($jsonLog);
+
+        $this->splitValuesController->store($request);
+    }
+
+    private function getValueSixDecimal($value): float
+    {
+        return intval(strval($value * 1000000)) / 1000000;
     }
 }

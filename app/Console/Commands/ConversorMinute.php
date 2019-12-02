@@ -43,14 +43,11 @@ class ConversorMinute extends Command
     public function handle()
     {
         //
-        $dt = Carbon::now();
         do {
             $this->info('Demo:Cron Cummand Run successfully!');
             echo "Conversor Running\n";
             $this->conversorController->conversor();
-            // $this->conversorController->split();
             echo "Conversor Done\n";
-            // time_sleep_until($dt->addSeconds(10)->timestamp);
             sleep(10);
             continue;
         } while(true);
