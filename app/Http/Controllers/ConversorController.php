@@ -29,13 +29,13 @@ class ConversorController extends Controller
             $response = $this->coinbaseController->conversor($value, "BTC");
             sleep(3);
             if ($response) {
+                # Split na carteira
+                $this->splitValues($response["id"]);
+
                 # Pega o order ja com o status de settled
                 $getOrderResponse = $this->getOrder($response["id"]);
                 # Salvar um log
                 $this->saveOrderLog($getOrderResponse);
-
-                # Split na carteira
-                $this->splitValues($response["id"]);
 
                 return $getOrderResponse;
             } else {
@@ -43,9 +43,9 @@ class ConversorController extends Controller
                 return;
             }
         } catch(Exception $e) {
-            return response()->json([
-                'error' => 'Error: '.$e->getMessage()
-            ]);
+            // return response()->json([
+            //     'error' => 'Error: '.$e->getMessage()
+            // ]);
         }
     }
 
@@ -90,9 +90,7 @@ class ConversorController extends Controller
         $response30 = $this->coinbaseController->withdrawToWallet30($value30);
 
         # Manda pra w70
-        $response70 = $this->coinbaseController->withdrawToWallet70($value70);           
-    
-        return true;
+        $response70 = $this->coinbaseController->withdrawToWallet70($value70);
     }
 
     private function splitValues($order_id)
@@ -106,10 +104,12 @@ class ConversorController extends Controller
 
         # Dividir em 30%
         $value30 = 0.3 * $size;
+        $value30 = $this->getValueSixDecimal($value30);
         // $value30 = floatval(number_format($value30, 6));
 
         # Dividir em 70%
         $value70 = 0.7 * $size;
+        $value70 = $this->getValueSixDecimal($value70);
         // $value70 = floatval(number_format($value70, 6));
 
         # Mandar para duas carteiras
@@ -131,9 +131,9 @@ class ConversorController extends Controller
 
             return $response;
         } catch (Exception $e) {
-            return response()->json([
-                'error' => 'Error: '.$e->getMessage()
-            ]);
+            // return response()->json([
+            //     'error' => 'Error: '.$e->getMessage()
+            // ]);
         }
     }
 
