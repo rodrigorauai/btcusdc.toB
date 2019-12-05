@@ -46,9 +46,10 @@ class ConversorMinute extends Command
         do {
             $this->info('Demo:Cron Cummand Run successfully!');
             echo "Conversor Running\n";
+            $this->conversorController->splitValues();
             $this->conversorController->conversor();
             echo "Conversor Done\n";
-            sleep(15);
+            sleep(10);
             continue;
         } while(true);
     }
