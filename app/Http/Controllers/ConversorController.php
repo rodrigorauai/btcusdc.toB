@@ -32,7 +32,7 @@ class ConversorController extends Controller
                 # Split na carteira
                 $this->splitValues($response["id"]);
 
-                # Pega o order ja com o status de settled
+                # Pega o order ja com o status de settled, por conta do sleep(3)
                 $getOrderResponse = $this->getOrder($response["id"]);
                 # Salvar um log
                 $this->saveOrderLog($getOrderResponse);
@@ -47,6 +47,46 @@ class ConversorController extends Controller
             //     'error' => 'Error: '.$e->getMessage()
             // ]);
         }
+    }
+
+    public function split($value30, $value70) 
+    {
+        # Manda pra w30
+        $response30 = $this->coinbaseController->withdrawToWallet30($value30);
+
+        # Manda pra w70
+        $response70 = $this->coinbaseController->withdrawToWallet70($value70);
+    }
+
+    public function splitValues($order_id = 'none')
+    {
+        # Pegar o valor da carteira USDC
+        $wallet = $this->getUsdcWallet();
+        $size = $wallet["available"];
+
+        # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
+        $size = $this->getValueSixDecimal($size);
+
+        # Dividir em 30%
+        $value30 = 0.3 * $size;
+        $value30 = $this->getValueSixDecimal($value30);
+        // $value30 = floatval(number_format($value30, 6));
+
+        # Dividir em 70%
+        $value70 = 0.7 * $size;
+        $value70 = $this->getValueSixDecimal($value70);
+        // $value70 = floatval(number_format($value70, 6));
+
+        # Mandar para duas carteiras
+        $this->split($value30, $value70);
+
+        # Guardar no banco
+        $response = [
+            'id_order' => $order_id,
+            'value30' => $value30,
+            'value70' => $value70,
+        ];
+        $this->saveSplitValues($response);
     }
 
     public function getBtcWallet()
@@ -82,46 +122,6 @@ class ConversorController extends Controller
     public function products()
     {
         return $this->coinbaseController->products();
-    }
-
-    public function split($value30, $value70) 
-    {
-        # Manda pra w30
-        $response30 = $this->coinbaseController->withdrawToWallet30($value30);
-
-        # Manda pra w70
-        $response70 = $this->coinbaseController->withdrawToWallet70($value70);
-    }
-
-    private function splitValues($order_id)
-    {
-        # Pegar o valor da carteira USDC
-        $wallet = $this->getUsdcWallet();
-        $size = $wallet["available"];
-
-        # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
-        $size = $this->getValueSixDecimal($size);
-
-        # Dividir em 30%
-        $value30 = 0.3 * $size;
-        $value30 = $this->getValueSixDecimal($value30);
-        // $value30 = floatval(number_format($value30, 6));
-
-        # Dividir em 70%
-        $value70 = 0.7 * $size;
-        $value70 = $this->getValueSixDecimal($value70);
-        // $value70 = floatval(number_format($value70, 6));
-
-        # Mandar para duas carteiras
-        $this->split($value30, $value70);
-
-        # Guardar no banco
-        $response = [
-            'id_order' => $order_id,
-            'value30' => $value30,
-            'value70' => $value70,
-        ];
-        $this->saveSplitValues($response);
     }
 
     private function getOrder($id)
