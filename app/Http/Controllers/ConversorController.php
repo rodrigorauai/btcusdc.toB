@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\CoinbaseController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\SplitValuesController;
+use Illuminate\Support\Facades\Log;
 
 class ConversorController extends Controller
 {
@@ -53,9 +54,11 @@ class ConversorController extends Controller
     {
         # Manda pra w30
         $response30 = $this->coinbaseController->withdrawToWallet30($value30);
+        Log::info($response30);
 
         # Manda pra w70
         $response70 = $this->coinbaseController->withdrawToWallet70($value70);
+        Log::info($response70);
     }
 
     public function splitValues($order_id = 'none')
