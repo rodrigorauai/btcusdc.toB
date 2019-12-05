@@ -29,7 +29,7 @@ class ConversorController extends Controller
             $response = $this->coinbaseController->conversor($value, "BTC");
             sleep(3);
             if ($response) {
-                # Split na carteira
+                # Split na carteira USDC
                 $this->splitValues($response["id"]);
 
                 # Pega o order ja com o status de settled, por conta do sleep(3)
@@ -77,16 +77,18 @@ class ConversorController extends Controller
         $value70 = $this->getValueSixDecimal($value70);
         // $value70 = floatval(number_format($value70, 6));
 
-        # Mandar para duas carteiras
-        $this->split($value30, $value70);
+        if ($value30 > 0 && $value70 > 0) {
+            # Mandar para duas carteiras
+            $this->split($value30, $value70);
 
-        # Guardar no banco
-        $response = [
-            'id_order' => $order_id,
-            'value30' => $value30,
-            'value70' => $value70,
-        ];
-        $this->saveSplitValues($response);
+            # Guardar no banco
+            $response = [
+                'id_order' => $order_id,
+                'value30' => $value30,
+                'value70' => $value70,
+            ];
+            $this->saveSplitValues($response);
+        }
     }
 
     public function getBtcWallet()
