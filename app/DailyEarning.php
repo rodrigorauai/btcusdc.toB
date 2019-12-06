@@ -22,7 +22,7 @@ class DailyEarning extends Model
         'email',
         'id_withdraw',
         'value',
-        'id_user',
+        'fee',
         'date',
         'destination_wallet'
     ];
@@ -34,7 +34,7 @@ class DailyEarning extends Model
         'email',
         'id_withdraw',
         'value',
-        'id_user',
+        'fee',
         'date',
         'destination_wallet'
     ];

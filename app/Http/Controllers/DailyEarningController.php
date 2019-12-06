@@ -97,7 +97,7 @@ class DailyEarningController extends Controller
         $dailyEarning->email = $validated["email"];
         $dailyEarning->id_withdraw = $validated["id_withdraw"];
         $dailyEarning->value = $validated["value"];
-        $dailyEarning->fee = $validated["id_user"];
+        $dailyEarning->fee = $validated["fee"];
         $dailyEarning->date = $validated["date"];
         $dailyEarning->destination_wallet = $validated["destination_wallet"];
 
