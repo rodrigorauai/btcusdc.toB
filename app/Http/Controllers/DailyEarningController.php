@@ -86,10 +86,8 @@ class DailyEarningController extends Controller
 
     public function withdrawRede(DailyEarningStoreRequest $request)
     {
-        // dd($request->only('teste'));
-
         $validated = $request->validated();
-        // dd($validated);
+        dd($validated);
         
         $dailyEarning = new DailyEarning;
         $dailyEarning->id_user = $validated["id_user"];

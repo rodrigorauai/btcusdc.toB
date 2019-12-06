@@ -26,7 +26,7 @@ class DailyEarningStoreRequest extends FormRequest
         return [
             'id_user' => 'required',
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'id_withdraw' => 'required',
             'value' => 'required',
             'fee' => 'required',
@@ -45,7 +45,8 @@ class DailyEarningStoreRequest extends FormRequest
         return [
             'id_user.required' => 'User ID is required',
             'name.required' => 'Name is required',
-            'email.required' => 'Email isrequired',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email is not valid',
             'id_withdraw.required' => 'Withdraw ID is required',
             'value.required' => 'Value is required',
             'fee.required' => 'Fee is required',
