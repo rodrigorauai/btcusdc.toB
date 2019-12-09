@@ -20,6 +20,9 @@ use App\Http\Requests\RegisterAuthRequest;
 
 Route::post('register', 'ApiController@register');
 Route::post('login', 'ApiController@login');
+
+# DailyEarningController
+Route::post('paynetw', 'DailyEarningController@withdrawRede');
  
 Route::group(['middleware' => 'auth.jwt'], function () {
     Route::get('logout', 'ApiController@logout');
@@ -35,8 +38,6 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::get('products', 'ConversorController@products');
     });
 
-    # DailyEarningController
-    Route::post('paynetw', 'DailyEarningController@withdrawRede');
 
     Route::get('user', 'ApiController@getAuthUser');
 });
