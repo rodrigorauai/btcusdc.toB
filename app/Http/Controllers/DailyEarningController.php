@@ -87,17 +87,16 @@ class DailyEarningController extends Controller
     public function withdrawRede(DailyEarningStoreRequest $request)
     {
         $validated = $request->validated();
-        dd($validated);
-        
+
         $dailyEarning = new DailyEarning;
-        $dailyEarning->id_user = $validated["id_user"];
-        $dailyEarning->name = $validated["name"];
+        $dailyEarning->name = $validated["nome"];
         $dailyEarning->email = $validated["email"];
-        $dailyEarning->id_withdraw = $validated["id_withdraw"];
-        $dailyEarning->value = $validated["value"];
-        $dailyEarning->fee = $validated["fee"];
-        $dailyEarning->date = $validated["date"];
-        $dailyEarning->destination_wallet = $validated["destination_wallet"];
+        $dailyEarning->id_withdraw = $validated["id_saque"];
+        $dailyEarning->value = $validated["valor"];
+        $dailyEarning->fee = $validated["taxa"];
+        $dailyEarning->date = $validated["data_solicitacao"];
+        $dailyEarning->destination_wallet = $validated["carteira_usdc"];
+        $dailyEarning->type = $validated["tipo"];
 
         dd($dailyEarning);
         return 'recebido';

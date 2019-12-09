@@ -17,25 +17,25 @@ class DailyEarning extends Model
 
     protected $fillable = [
         'id',
-        'id_user',
-        'name',
-        'email',
         'id_withdraw',
+        'name',
         'value',
         'fee',
-        'date',
-        'destination_wallet'
+        'data_solicitacao',
+        'destination_wallet',
+        'email',
+        'type'
     ];
 
     protected $guarded = [
         'id',
-        'id_user',
         'name',
-        'email',
         'id_withdraw',
         'value',
         'fee',
-        'date',
-        'destination_wallet'
+        'data_solicitacao',
+        'destination_wallet',
+        'email',
+        'type'
     ];
 }

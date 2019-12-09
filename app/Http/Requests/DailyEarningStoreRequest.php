@@ -24,14 +24,15 @@ class DailyEarningStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_user' => 'required',
-            'name' => 'required',
+            'nome' => 'required',
             'email' => 'required|email',
-            'id_withdraw' => 'required',
-            'value' => 'required',
-            'fee' => 'required',
-            'date' => 'required',
-            'destination_wallet' => 'required'
+            'id_saque' => 'required',
+            'valor' => 'required',
+            'taxa' => 'required',
+            'data_solicitacao' => 'required',
+            'data_solicitacao.date' => 'required',
+            'carteira_usdc' => 'required',
+            'tipo' => 'required'
         ];
     }
 
@@ -43,15 +44,16 @@ class DailyEarningStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'id_user.required' => 'User ID is required',
-            'name.required' => 'Name is required',
+            'nome.required' => 'Nome is required',
             'email.required' => 'Email is required',
             'email.email' => 'Email is not valid',
-            'id_withdraw.required' => 'Withdraw ID is required',
-            'value.required' => 'Value is required',
-            'fee.required' => 'Fee is required',
-            'date.required' => 'Date is required',
-            'destination_wallet.required' => 'Destination Wallet is required'
+            'id_saque.required' => 'Saque ID is required',
+            'valor.required' => 'Valor is required',
+            'taxa.required' => 'Taxa is required',
+            'data_solicitacao.required' => 'Data Solitacao is required',
+            'data_solicitacao.date.required' => 'Date is required',
+            'carteira_usdc.required' => 'Carteira USDC is required',
+            'tipo.required' => 'Tipo is required'
         ];
     }
 }
