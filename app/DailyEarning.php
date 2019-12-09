@@ -21,7 +21,7 @@ class DailyEarning extends Model
         'name',
         'value',
         'fee',
-        'data_solicitacao',
+        'date',
         'destination_wallet',
         'email',
         'type'
@@ -33,7 +33,7 @@ class DailyEarning extends Model
         'id_withdraw',
         'value',
         'fee',
-        'data_solicitacao',
+        'date',
         'destination_wallet',
         'email',
         'type'

@@ -89,16 +89,15 @@ class DailyEarningController extends Controller
         $validated = $request->validated();
 
         $dailyEarning = new DailyEarning;
-        $dailyEarning->name = $validated["nome"];
-        $dailyEarning->email = $validated["email"];
         $dailyEarning->id_withdraw = $validated["id_saque"];
+        $dailyEarning->name = $validated["nome"];
         $dailyEarning->value = $validated["valor"];
         $dailyEarning->fee = $validated["taxa"];
-        $dailyEarning->date = $validated["data_solicitacao"];
+        $dailyEarning->date = $validated["data_solicitacao"]["date"];
         $dailyEarning->destination_wallet = $validated["carteira_usdc"];
+        $dailyEarning->email = $validated["email"];
         $dailyEarning->type = $validated["tipo"];
 
-        dd($dailyEarning);
-        return 'recebido';
+        $dailyEarning->save();
     }
 }

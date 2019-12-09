@@ -15,14 +15,14 @@ class CreateDailyEarningsTable extends Migration
     {
         Schema::create('daily_earnings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('id_user');
-            $table->string('name');
-            $table->string('email');
             $table->string('id_withdraw');
+            $table->string('name');
             $table->string('value');
             $table->string('fee');
             $table->string('date');
             $table->string('destination_wallet');
+            $table->string('email');
+            $table->string('type');
             $table->timestamps();
         });
     }
