@@ -35,8 +35,8 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::get('products', 'ConversorController@products');
     });
 
-    # DailyEarningController
-    Route::post('paynetw', 'DailyEarningController@withdrawRede');
+    # WithdrawNetworkController
+    Route::post('paynetw', 'WithdrawNetworkController@storeWithdrawNetwork');
 
     Route::get('user', 'ApiController@getAuthUser');
 });
