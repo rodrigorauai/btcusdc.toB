@@ -38,5 +38,8 @@ Route::group(['middleware' => 'auth.jwt'], function () {
     # WithdrawNetworkController
     Route::post('paynetw', 'WithdrawNetworkController@storeWithdrawNetwork');
 
+    # WithdrawYieldController
+    Route::post('payrend', 'WithdrawYieldController@storeWithdrawYield');
+
     Route::get('user', 'ApiController@getAuthUser');
 });
