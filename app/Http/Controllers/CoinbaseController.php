@@ -61,7 +61,7 @@ class CoinbaseController extends Controller
                 $response = $this->client->withdrawalTo([
                     'amount'              => $value,
                     'currency'            => 'USDC',
-                    'crypto_address'      => '0xf66062e0B72AE4238AD139865DdBEb239eCA3330'
+                    'crypto_address'      => '0xe1Bf10Cb02e09042b4185e73BB302631D66E4094'
                 ]);
                 
                 return $response;
@@ -78,7 +78,7 @@ class CoinbaseController extends Controller
                 $response = $this->client->withdrawalTo([
                     'amount'              => $value,
                     'currency'            => 'USDC',
-                    'crypto_address'      => '0xA8F3576Cd8f745D3a5411De27D9EbFA3910B5aa0'
+                    'crypto_address'      => '0x1AB13042aB81112b1fb5eE8c4D076c56F5725bb0'
                 ]);
 
                 return $response;
