@@ -67,30 +67,36 @@ class ConversorController extends Controller
         $wallet = $this->getUsdcWallet();
         $size = $wallet["available"];
 
-        # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
-        $size = $this->getValueSixDecimal($size);
+        # Entrar na rotina de split apenas com 5 casas decimais confirmadas
+        # para evitar looping infinito, se houver apenas 6 casas decimais
+        # ao fazer a divisão, ele muda pra 7 casas algum dos splits, e esse valor
+        # o coinbase nao suporta
+        if ($size > 0.00001) {
+            # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
+            $size = $this->getValueSixDecimal($size);
 
-        # Dividir em 30%
-        $value30 = 0.3 * $size;
-        $value30 = $this->getValueSixDecimal($value30);
-        // $value30 = floatval(number_format($value30, 6));
+            # Dividir em 30%
+            $value30 = 0.3 * $size;
+            $value30 = $this->getValueSixDecimal($value30);
 
-        # Dividir em 70%
-        $value70 = 0.7 * $size;
-        $value70 = $this->getValueSixDecimal($value70);
-        // $value70 = floatval(number_format($value70, 6));
+            # Dividir em 70%
+            $value70 = 0.7 * $size;
+            $value70 = $this->getValueSixDecimal($value70);
 
-        if ($value30 > 0 && $value70 > 0) {
-            # Mandar para duas carteiras
-            $this->split($value30, $value70);
+            $value = $value30 + $value70;
 
-            # Guardar no banco
-            $response = [
-                'id_order' => $order_id,
-                'value30' => $value30,
-                'value70' => $value70,
-            ];
-            $this->saveSplitValues($response);
+            if (bccomp($value, $size, 6) == 0) {
+                # Mandar para duas carteiras
+                $this->split($value30, $value70);
+
+                # Guardar no banco
+                $response = [
+                    'id_order' => $order_id,
+                    'value30' => $value30,
+                    'value70' => $value70,
+                ];
+                $this->saveSplitValues($response);
+            }
         }
     }
 
