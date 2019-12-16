@@ -89,6 +89,7 @@ class DailyEarningController extends Controller
         $validated = $request->validated();
 
         $dailyEarning = new DailyEarning;
+        // $dailyEarning->id_user = $validated["id_usuario"];
         $dailyEarning->name = $validated["nome"];
         $dailyEarning->email = $validated["email"];
         $dailyEarning->destination_wallet = $validated["carteira_usdc"];
@@ -121,7 +122,7 @@ class DailyEarningController extends Controller
         ]);
         $withdraw = json_decode($withdraw);
 
-        dd($client, $withdraw);
+        dd($client, $withdraw->save());
 
         $dailyEarning->save();
     }

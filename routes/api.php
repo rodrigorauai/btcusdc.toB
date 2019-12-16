@@ -37,7 +37,7 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
     # Teste
     Route::post('pay', 'DailyEarningController@withdrawRede');
-    Route::post('uuid/teste', 'ClientController@store');
+    Route::post('uuid/teste', 'WithdrawController@store');
 
     # WithdrawNetworkController
     Route::post('paynetw', 'WithdrawNetworkController@storeWithdrawNetwork');

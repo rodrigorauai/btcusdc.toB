@@ -15,7 +15,7 @@ class CreateWithdrawsTable extends Migration
     {
         Schema::create('withdraws', function (Blueprint $table) {
             $table->uuid('id');
-            $table->string('id_withdraw');
+            $table->string('mmn_id_withdraw');
             $table->string('type');
             $table->string('value');
             $table->string('fee');

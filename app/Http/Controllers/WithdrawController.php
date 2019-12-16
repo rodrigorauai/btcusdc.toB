@@ -35,7 +35,15 @@ class WithdrawController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request);
+        $withdraw = new Withdraw;
+        $withdraw->id_withdraw = 'id_withdraw';
+        $withdraw->type = 'type';
+        $withdraw->value = 'value';
+        $withdraw->fee = 'fee';
+        $withdraw->date = 'date';
+
+        $withdraw->save();
     }
 
     /**
