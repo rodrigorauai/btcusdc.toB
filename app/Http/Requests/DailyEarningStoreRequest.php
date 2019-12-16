@@ -24,6 +24,7 @@ class DailyEarningStoreRequest extends FormRequest
     public function rules()
     {
         return [
+            'id_usuario' => 'required',
             'nome' => 'required',
             'email' => 'required|email',
             'id_saque' => 'required',
@@ -44,6 +45,7 @@ class DailyEarningStoreRequest extends FormRequest
     public function messages()
     {
         return [
+            'id_usuario.required' => 'Usuario ID is required',
             'nome.required' => 'Nome is required',
             'email.required' => 'Email is required',
             'email.email' => 'Email is not valid',

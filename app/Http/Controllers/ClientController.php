@@ -30,18 +30,20 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($request)
     {
-        dd($request);
         $client = new Client;
-        $client->name = 'name';
-        $client->email = 'email';
-        $client->usdc_wallet = 'wallet';
-
-        $client->save();
+        $client->mmn_id_user = $request->mmn_id_user;
+        $client->name = $request->name;
+        $client->email = $request->email;
+        $client->usdc_wallet = $request->usdc_wallet;
+        
+        if ($client->save()) {
+            return $client;
+        }
     }
 
     /**

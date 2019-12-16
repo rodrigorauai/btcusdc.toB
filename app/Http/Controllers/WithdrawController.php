@@ -30,11 +30,12 @@ class WithdrawController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($request)
     {
+        # Adicionar relacionamento com client ($request->client)
         dd($request);
         $withdraw = new Withdraw;
         $withdraw->id_withdraw = 'id_withdraw';
