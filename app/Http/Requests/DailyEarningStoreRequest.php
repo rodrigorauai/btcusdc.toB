@@ -23,18 +23,20 @@ class DailyEarningStoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'id_usuario' => 'required',
-            'nome' => 'required',
-            'email' => 'required|email',
-            'id_saque' => 'required',
-            'valor' => 'required',
-            'taxa' => 'required',
-            'data_solicitacao' => 'required',
-            'data_solicitacao.date' => 'required',
-            'carteira_usdc' => 'required',
-            'tipo' => 'required'
+        $rules = [
+            '*.id_usuario' => 'required',
+            '*.nome' => 'required',
+            '*.email' => 'required|email',
+            '*.id_saque' => 'required',
+            '*.valor' => 'required',
+            '*.taxa' => 'required',
+            '*.data_solicitacao' => 'required',
+            '*.data_solicitacao.date' => 'required',
+            '*.carteira_usdc' => 'required',
+            '*.tipo' => 'required'
         ];
+
+        return $rules;
     }
 
     /**

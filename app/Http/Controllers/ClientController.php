@@ -35,6 +35,7 @@ class ClientController extends Controller
      */
     public function store($request)
     {
+        // Verifica o mmn_id_user, caso ja exista, nao cadastrar
         $client = new Client;
         $client->mmn_id_user = $request->mmn_id_user;
         $client->name = $request->name;

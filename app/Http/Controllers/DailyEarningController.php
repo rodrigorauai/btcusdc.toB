@@ -102,45 +102,68 @@ class DailyEarningController extends Controller
     {
         $validated = $request->validated();
 
-        $dailyEarning = new DailyEarning;
-        $dailyEarning->mmn_id_user = $validated["id_usuario"];
-        $dailyEarning->name = $validated["nome"];
-        $dailyEarning->email = $validated["email"];
-        $dailyEarning->destination_wallet = $validated["carteira_usdc"];
+        foreach ($validated as $key => $value) {
+            $client = json_encode([
+                'mmn_id_user' => $value["id_usuario"],
+                'name' => $value["nome"],
+                'email' => $value["email"],
+                'usdc_wallet' => $value["carteira_usdc"]
+            ]);
+            $client = json_decode($client);
 
-        $client = json_encode([
-            'mmn_id_user' => $validated["id_usuario"],
-            'name' => $validated["nome"],
-            'email' => $validated["email"],
-            'usdc_wallet' => $validated["carteira_usdc"]
-        ]);
-        $client = json_decode($client);
+            # Chama o store do client controller
+            # retornando o client
+            # pega o client e cadastra no withdraw
+            $client = $this->clientController->store($client);
+
+            // Withdraw
+            $withdraw = json_encode([
+                'mmn_id_withdraw' => $value["id_saque"],
+                'type' => $value["tipo"],
+                'value' => $value["valor"],
+                'fee' => $value["taxa"],
+                'date' => $value["data_solicitacao"]["date"],
+                'client' => $client,
+            ]);
+            $withdraw = json_decode($withdraw);
+
+            $this->withdrawController->store($withdraw);
+        }
+
+
+        // Client
+        // $client = json_encode([
+        //     'mmn_id_user' => $validated["id_usuario"],
+        //     'name' => $validated["nome"],
+        //     'email' => $validated["email"],
+        //     'usdc_wallet' => $validated["carteira_usdc"]
+        // ]);
+        // $client = json_decode($client);
+
+        # User ja recebeu?
+
+        # Mudou a carteira?
+
+        # Envia email para user, confirmando mudança da carteira
+
+        
 
         # Chama o store do client controller
         # retornando o client
         # pega o client e cadastra no withdraw
-        $client = $this->clientController->store($client);
+        // $client = $this->clientController->store($client);
 
-        $dailyEarning->mmn_id_withdraw = $validated["id_saque"];
-        $dailyEarning->value = $validated["valor"];
-        $dailyEarning->fee = $validated["taxa"];
-        $dailyEarning->date = $validated["data_solicitacao"]["date"];
-        $dailyEarning->type = $validated["tipo"];
+        // Withdraw
+        // $withdraw = json_encode([
+        //     'mmn_id_withdraw' => $validated["id_saque"],
+        //     'type' => $validated["tipo"],
+        //     'value' => $validated["valor"],
+        //     'fee' => $validated["taxa"],
+        //     'date' => $validated["data_solicitacao"]["date"],
+        //     'client' => $client,
+        // ]);
+        // $withdraw = json_decode($withdraw);
 
-        $withdraw = json_encode([
-            'mmn_id_withdraw' => $validated["id_saque"],
-            'type' => $validated["tipo"],
-            'value' => $validated["valor"],
-            'fee' => $validated["taxa"],
-            'date' => $validated["data_solicitacao"]["date"],
-            'client' => $client,
-        ]);
-        $withdraw = json_decode($withdraw);
-
-        $this->withdrawController->store($withdraw);
-
-        // dd($client, $withdraw->save());
-
-        // $dailyEarning->save();
+        // $this->withdrawController->store($withdraw);
     }
 }
