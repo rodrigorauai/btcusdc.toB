@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Client;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class ClientController extends Controller
 {
@@ -41,9 +42,15 @@ class ClientController extends Controller
         $client->name = $request->name;
         $client->email = $request->email;
         $client->usdc_wallet = $request->usdc_wallet;
-        
-        if ($client->save()) {
+
+        try { 
+            $client->save();
+
             return $client;
+        } catch(QueryException $ex) {
+            return;
+            dd($ex->getMessage()); 
+            // Note any method of class PDOException can be called on $ex.
         }
     }
 
@@ -53,9 +60,13 @@ class ClientController extends Controller
      * @param  \App\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function show(Client $client)
+    public function show($mmn_id)
     {
-        //
+        $client = Client::where('mmn_id_user', $mmn_id)->first();
+
+        if ($client) {
+            return $client;
+        }
     }
 
     /**

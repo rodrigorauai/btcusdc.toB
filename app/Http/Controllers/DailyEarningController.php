@@ -111,10 +111,17 @@ class DailyEarningController extends Controller
             ]);
             $client = json_decode($client);
 
-            # Chama o store do client controller
+            # Verifica se o client ja esta cadastrado
+            # através do mmn_id
+            $check_client = $this->clientController->show($value["id_usuario"]);
+
+            # Caso ja tenha cadastro chama o store do client controller
             # retornando o client
-            # pega o client e cadastra no withdraw
-            $client = $this->clientController->store($client);
+            if (!$check_client) {
+                $client = $this->clientController->store($client);
+            } else {
+                $client = $check_client;
+            }
 
             // Withdraw
             $withdraw = json_encode([

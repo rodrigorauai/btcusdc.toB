@@ -15,7 +15,7 @@ class CreateClientsTable extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->uuid('id');
-            $table->string('mmn_id_user');
+            $table->string('mmn_id_user')->unique();
             $table->string('name');
             $table->string('email');
             $table->string('usdc_wallet');
