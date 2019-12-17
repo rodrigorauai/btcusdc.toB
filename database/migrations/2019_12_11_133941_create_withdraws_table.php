@@ -20,6 +20,8 @@ class CreateWithdrawsTable extends Migration
             $table->string('value');
             $table->string('fee');
             $table->string('date');
+            $table->string('client_id');
+            $table->foreign('client_id')->references('id')->on('clients');
             $table->timestamps();
             $table->primary('id');
         });

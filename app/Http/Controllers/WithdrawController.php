@@ -36,15 +36,17 @@ class WithdrawController extends Controller
     public function store($request)
     {
         # Adicionar relacionamento com client ($request->client)
-        dd($request);
         $withdraw = new Withdraw;
-        $withdraw->id_withdraw = 'id_withdraw';
-        $withdraw->type = 'type';
-        $withdraw->value = 'value';
-        $withdraw->fee = 'fee';
-        $withdraw->date = 'date';
+        $withdraw->mmn_id_withdraw = $request->mmn_id_withdraw;
+        $withdraw->type = $request->type;
+        $withdraw->value = $request->value;
+        $withdraw->fee = $request->fee;
+        $withdraw->date = $request->date;
+        $withdraw->client_id = $request->client->id;
 
-        $withdraw->save();
+        if ($withdraw->save()) {
+            return $withdraw;
+        }
     }
 
     /**

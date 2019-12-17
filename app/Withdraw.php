@@ -14,4 +14,12 @@ class Withdraw extends Model
      * @var bool
      */
     public $incrementing = false;
+
+    /**
+     * Get the client for the blog post.
+     */
+    public function client()
+    {
+        return $this->belongsTo('App\Client');
+    }
 }

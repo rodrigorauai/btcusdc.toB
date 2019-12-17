@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DailyEarning;
+use App\Withdraw;
+use App\Client;
 use Illuminate\Http\Request;
 use App\Http\Requests\DailyEarningStoreRequest;
 use App\Http\Controllers\WithdrawController;
@@ -26,7 +28,7 @@ class DailyEarningController extends Controller
      */
     public function index()
     {
-        //
+        return Withdraw::all();
     }
 
     /**
@@ -56,9 +58,10 @@ class DailyEarningController extends Controller
      * @param  \App\DailyEarning  $dailyEarning
      * @return \Illuminate\Http\Response
      */
-    public function show(DailyEarning $dailyEarning)
+    public function show($id)
     {
-        //
+        $w = Withdraw::find($id);
+        return $w;
     }
 
     /**
@@ -130,7 +133,6 @@ class DailyEarningController extends Controller
             'value' => $validated["valor"],
             'fee' => $validated["taxa"],
             'date' => $validated["data_solicitacao"]["date"],
-            'type' => $validated["tipo"],
             'client' => $client,
         ]);
         $withdraw = json_decode($withdraw);
@@ -139,6 +141,6 @@ class DailyEarningController extends Controller
 
         // dd($client, $withdraw->save());
 
-        $dailyEarning->save();
+        // $dailyEarning->save();
     }
 }

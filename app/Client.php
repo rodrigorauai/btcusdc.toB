@@ -35,4 +35,12 @@ class Client extends Model
         'usdc_wallet',
         'email',
     ];
+
+    /**
+     * Get the withdrawals for the blog post.
+     */
+    public function withdrawals()
+    {
+        return $this->hasMany('App\Withdraw');
+    }
 }
