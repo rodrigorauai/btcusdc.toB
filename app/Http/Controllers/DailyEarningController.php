@@ -111,17 +111,30 @@ class DailyEarningController extends Controller
             ]);
             $client = json_decode($client);
 
-            # Verifica se o client ja esta cadastrado
+            # Verifica se o client ja esta cadastrado 
             # através do mmn_id
             $check_client = $this->clientController->show($value["id_usuario"]);
 
-            # Caso ja tenha cadastro chama o store do client controller
+            # Caso nao tenha cadastro chama o store do client controller
             # retornando o client
             if (!$check_client) {
+                # (fluxo do recebeu 1x: não)
                 $client = $this->clientController->store($client);
             } else {
+                # (fluxo do recebeu 1x: sim)
+                # Verificar carteira, se mudou mandar email
+                # e tambem cancelar o pagamento, cliente verifica com o mmn
+                # se for o caso, envia o pagamento novamente
+                if ($check_client->usdc_wallet !== $client->usdc_wallet) {
+                    # Carteira esta diferente, mandar email
+                    echo "Mandar email".$client->email;
+                    continue;
+                }
+
                 $client = $check_client;
             }
+
+            # Envia email para user, confirmando mudança da carteira
 
             // Withdraw
             $withdraw = json_encode([
@@ -136,41 +149,5 @@ class DailyEarningController extends Controller
 
             $this->withdrawController->store($withdraw);
         }
-
-
-        // Client
-        // $client = json_encode([
-        //     'mmn_id_user' => $validated["id_usuario"],
-        //     'name' => $validated["nome"],
-        //     'email' => $validated["email"],
-        //     'usdc_wallet' => $validated["carteira_usdc"]
-        // ]);
-        // $client = json_decode($client);
-
-        # User ja recebeu?
-
-        # Mudou a carteira?
-
-        # Envia email para user, confirmando mudança da carteira
-
-        
-
-        # Chama o store do client controller
-        # retornando o client
-        # pega o client e cadastra no withdraw
-        // $client = $this->clientController->store($client);
-
-        // Withdraw
-        // $withdraw = json_encode([
-        //     'mmn_id_withdraw' => $validated["id_saque"],
-        //     'type' => $validated["tipo"],
-        //     'value' => $validated["valor"],
-        //     'fee' => $validated["taxa"],
-        //     'date' => $validated["data_solicitacao"]["date"],
-        //     'client' => $client,
-        // ]);
-        // $withdraw = json_decode($withdraw);
-
-        // $this->withdrawController->store($withdraw);
     }
 }
