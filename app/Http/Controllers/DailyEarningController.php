@@ -148,6 +148,7 @@ class DailyEarningController extends Controller
                 'value' => $value["valor"],
                 'fee' => $value["taxa"],
                 'date' => $value["data_solicitacao"]["date"],
+                'status' => $status_withdraw,
                 'client' => $client,
             ]);
             $withdraw = json_decode($withdraw);
@@ -175,11 +176,10 @@ class DailyEarningController extends Controller
                 ];
             }
 
-            # Em vez de retornar a lista, guardar no banco (payment)
+            # Em vez de retornar a lista, atualizar no banco 
             # Para quando o financeiro solicitar o saque, puxar dessa tabela
-            $withdrawals[] = $withdraw_formated;
-            
+            # Caso o status seja de 'aprovado', manda pro coinbase
+            $this->withdrawController->update($withdraw->mmn_id_withdraw, $withdraw_formated);
         }
-        dd($withdrawals);
     }
 }

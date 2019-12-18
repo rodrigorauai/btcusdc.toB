@@ -44,6 +44,9 @@ Route::group(['middleware' => 'auth.jwt'], function () {
     # Client
     Route::get('client/{mmn_id}', 'ClientController@show');
 
+    # Withdraw
+    Route::get('withdraw/{mmn_id}', 'WithdrawController@show');
+
     # WithdrawNetworkController
     Route::post('paynetw', 'WithdrawNetworkController@storeWithdrawNetwork');
 

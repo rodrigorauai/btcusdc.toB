@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Withdraw;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Carbon\Carbon;
 
 class WithdrawController extends Controller
 {
@@ -42,9 +43,10 @@ class WithdrawController extends Controller
         $withdraw->value = $request->value;
         $withdraw->fee = $request->fee;
         $withdraw->date = $request->date;
+        $withdraw->status = $request->status;
         $withdraw->client_id = $request->client->id;
 
-        try { 
+        try {
             $withdraw->save();
 
             return $withdraw;
@@ -61,9 +63,19 @@ class WithdrawController extends Controller
      * @param  \App\Withdraw  $withdraw
      * @return \Illuminate\Http\Response
      */
-    public function show(Withdraw $withdraw)
+    public function show($mmn_id_withdraw)
     {
-        //
+        $withdraw = Withdraw::where('mmn_id_withdraw', $mmn_id_withdraw)->first();
+
+        $withdraw_date = new Carbon($withdraw->created_at);
+
+        dd($withdraw_date->day);
+
+        dd($today = Carbon::today());
+        dd($withdraw->created_at);
+        if ($withdraw) {
+            return $withdraw;
+        }
     }
 
     /**
@@ -80,13 +92,17 @@ class WithdrawController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Withdraw  $withdraw
+     * @param  $id
+     * @param  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Withdraw $withdraw)
+    public function update($mmn_id_withdraw, $request)
     {
-        //
+        $withdraw = Withdraw::where('mmn_id_withdraw', $mmn_id_withdraw)->first();
+
+        $withdraw->status = $request["status"];
+
+        $withdraw->save();
     }
 
     /**
