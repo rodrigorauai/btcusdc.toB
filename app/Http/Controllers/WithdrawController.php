@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Withdraw;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class WithdrawController extends Controller
 {
@@ -43,8 +44,14 @@ class WithdrawController extends Controller
         $withdraw->date = $request->date;
         $withdraw->client_id = $request->client->id;
 
-        if ($withdraw->save()) {
+        try { 
+            $withdraw->save();
+
             return $withdraw;
+        } catch(QueryException $ex) {
+            return;
+            dd($ex->getMessage());
+            // Note any method of class PDOException can be called on $ex.
         }
     }
 

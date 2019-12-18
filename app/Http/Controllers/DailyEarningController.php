@@ -101,8 +101,12 @@ class DailyEarningController extends Controller
     public function withdrawRede(DailyEarningStoreRequest $request)
     {
         $validated = $request->validated();
+        $withdrawals = [];
 
         foreach ($validated as $key => $value) {
+            $check_valid = false;
+            $status_withdraw = 'recebido';
+
             $client = json_encode([
                 'mmn_id_user' => $value["id_usuario"],
                 'name' => $value["nome"],
@@ -120,21 +124,22 @@ class DailyEarningController extends Controller
             if (!$check_client) {
                 # (fluxo do recebeu 1x: não)
                 $client = $this->clientController->store($client);
+                $check_valid = true;
             } else {
                 # (fluxo do recebeu 1x: sim)
-                # Verificar carteira, se mudou mandar email
+                # Verificar carteira, se mudou: mandar email
                 # e tambem cancelar o pagamento, cliente verifica com o mmn
-                # se for o caso, envia o pagamento novamente
                 if ($check_client->usdc_wallet !== $client->usdc_wallet) {
                     # Carteira esta diferente, mandar email
                     echo "Mandar email".$client->email;
-                    continue;
+                    // continue;
+                    $check_valid = false;
+                } else {
+                    $check_valid = true;
                 }
 
                 $client = $check_client;
             }
-
-            # Envia email para user, confirmando mudança da carteira
 
             // Withdraw
             $withdraw = json_encode([
@@ -147,7 +152,34 @@ class DailyEarningController extends Controller
             ]);
             $withdraw = json_decode($withdraw);
 
-            $this->withdrawController->store($withdraw);
+            if ($check_valid) {
+                # Status Aprovado
+                $withdraw_stored = $this->withdrawController->store($withdraw);
+
+                # Formatar para dar o callback para MMN
+                if ($withdraw_stored) {
+                    $status_withdraw = 'aprovado';
+
+                    $withdraw_formated = [
+                        'id_saque' => $withdraw->mmn_id_withdraw,
+                        'status' => $status_withdraw,
+                    ];
+                }
+            } else {
+                # Status Negado
+                $status_withdraw = 'negado';
+
+                $withdraw_formated = [
+                    'id_saque' => $withdraw->mmn_id_withdraw,
+                    'status' => $status_withdraw,
+                ];
+            }
+
+            # Em vez de retornar a lista, guardar no banco (payment)
+            # Para quando o financeiro solicitar o saque, puxar dessa tabela
+            $withdrawals[] = $withdraw_formated;
+            
         }
+        dd($withdrawals);
     }
 }
