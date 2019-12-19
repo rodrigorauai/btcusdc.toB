@@ -85,7 +85,8 @@ class ConversorController extends Controller
 
             $value = $value30 + $value70;
 
-            if (bccomp($value, $size, 6) == 0) {
+            # Verifica se os valores somados sao iguais ou menores que o available na wallet
+            if ((bccomp($value, $size, 6) == 0) || (bccomp($value, $size, 6) == -1)) {
                 # Mandar para duas carteiras
                 $this->split($value30, $value70);
 
