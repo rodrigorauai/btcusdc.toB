@@ -101,7 +101,6 @@ class DailyEarningController extends Controller
     public function withdrawRede(DailyEarningStoreRequest $request)
     {
         $validated = $request->validated();
-        $withdrawals = [];
 
         foreach ($validated as $key => $value) {
             $check_valid = false;
@@ -122,19 +121,21 @@ class DailyEarningController extends Controller
             # Caso nao tenha cadastro chama o store do client controller
             # retornando o client
             if (!$check_client) {
-                # (fluxo do recebeu 1x: não)
+                # **(fluxo do recebeu 1x: não)**
                 $client = $this->clientController->store($client);
                 $check_valid = true;
             } else {
-                # (fluxo do recebeu 1x: sim)
+                # **(fluxo do recebeu 1x: sim)**
                 # Verificar carteira, se mudou: mandar email
                 # e tambem cancelar o pagamento, cliente verifica com o mmn
                 if ($check_client->usdc_wallet !== $client->usdc_wallet) {
+                    # **(mudou carteira: sim)**
                     # Carteira esta diferente, mandar email
                     echo "Mandar email".$client->email;
                     // continue;
                     $check_valid = false;
                 } else {
+                    # **(mudou carteira: não)**
                     $check_valid = true;
                 }
 
@@ -153,6 +154,14 @@ class DailyEarningController extends Controller
             ]);
             $withdraw = json_decode($withdraw);
 
+            $check_withdraw_exists = $this->withdrawController->show($withdraw->mmn_id_withdraw);
+
+            # Withdraw ja existe (quando mudar a carteira do cliente e enviar o saque novamente)
+            if (!$check_withdraw_exists) {
+
+            }
+
+            # **(verifica status do pagamento (aprovado ou negado), para guardar no banco)**
             if ($check_valid) {
                 # Status Aprovado
                 $withdraw_stored = $this->withdrawController->store($withdraw);
@@ -181,5 +190,9 @@ class DailyEarningController extends Controller
             # Caso o status seja de 'aprovado', manda pro coinbase
             $this->withdrawController->update($withdraw->mmn_id_withdraw, $withdraw_formated);
         }
+
+        # Chama função para mandar email para financeiro
+        $email = $this->withdrawController->dayWithdrawals();
+        dd($email);
     }
 }

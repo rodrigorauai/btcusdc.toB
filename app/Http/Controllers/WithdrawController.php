@@ -67,12 +67,6 @@ class WithdrawController extends Controller
     {
         $withdraw = Withdraw::where('mmn_id_withdraw', $mmn_id_withdraw)->first();
 
-        $withdraw_date = new Carbon($withdraw->created_at);
-
-        dd($withdraw_date->day);
-
-        dd($today = Carbon::today());
-        dd($withdraw->created_at);
         if ($withdraw) {
             return $withdraw;
         }
@@ -102,7 +96,15 @@ class WithdrawController extends Controller
 
         $withdraw->status = $request["status"];
 
-        $withdraw->save();
+        try {
+            $withdraw->save();
+
+            return $withdraw;
+        } catch(QueryException $ex) {
+            return;
+            dd($ex->getMessage());
+            // Note any method of class PDOException can be called on $ex.
+        }
     }
 
     /**
@@ -115,4 +117,39 @@ class WithdrawController extends Controller
     {
         //
     }
+
+    /**
+     * Display a listing of withdrawals to pay.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function dayWithdrawals()
+    {
+        $withdrals = [];
+        $withdrawals_db = Withdraw::where('status', 'aprovado')
+            ->get();
+        $today = Carbon::today();
+
+        foreach ($withdrawals_db as $key => $value) {
+            if ($value->created_at->day == $today->day) {
+                $withdrals[] = [
+                    'id_saque' => $value->mmn_id_withdraw,
+                    'value' => $value->value,
+                    'fee' => $value->fee,
+                    'day' => $value->created_at->day
+                ];
+            }
+        }
+
+        return $withdrals;
+    }
+
+    /**
+     * Send email with day's withdrawals.
+     */
+    public function sendEmail()
+    {
+        // Configurar pra mandar email
+    }
+
 }
