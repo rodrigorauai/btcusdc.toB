@@ -6,6 +6,8 @@ use App\Withdraw;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendDailyWithdrawals;
 
 class WithdrawController extends Controller
 {
@@ -16,7 +18,26 @@ class WithdrawController extends Controller
      */
     public function index()
     {
-        //
+        $date_formated = Carbon::today();
+
+        $withdrawals = $this->dayWithdrawals();
+
+        $total = [
+            'fees' => 0,
+            'withdrawals' => 0
+        ];
+
+        foreach ($withdrawals as $key) {
+            $total['fees'] += $key['fee'];
+            $total['withdrawals'] += $key['value'];
+        }
+
+        return view('emails.daily_withdrawals', [
+            'withdrawals' => $withdrawals,
+            'date_formated' => $date_formated,
+            'total' => $total
+            ]
+        );
     }
 
     /**
@@ -125,15 +146,15 @@ class WithdrawController extends Controller
      */
     public function dayWithdrawals()
     {
-        $withdrals = [];
+        $withdrawals = [];
         $withdrawals_db = Withdraw::where('status', 'aprovado')
             ->get();
         $today = Carbon::today();
 
         foreach ($withdrawals_db as $key => $value) {
             if ($value->created_at->day == $today->day) {
-                $withdrals[] = [
-                    'id_saque' => $value->mmn_id_withdraw,
+                $withdrawals[] = [
+                    'id_withdraw' => $value->mmn_id_withdraw,
                     'value' => $value->value,
                     'fee' => $value->fee,
                     'day' => $value->created_at->day
@@ -141,15 +162,28 @@ class WithdrawController extends Controller
             }
         }
 
-        return $withdrals;
+        // dd($withdrawals);
+
+        return $this->sendEmail($withdrawals);
+        return $withdrawals;
     }
 
     /**
      * Send email with day's withdrawals.
      */
-    public function sendEmail()
+    public function sendEmail($withdrawals)
     {
         // Configurar pra mandar email
+        $date_formated = Carbon::today();
+        
+        // return view('emails.daily_withdrawals', [
+        //         'withdrawals' => $withdrawals,
+        //         'date_formated' => $date_formated
+        //     ]
+        // );
+
+        $mail = Mail::to('theus.ass.reis@gmail.com')->send(new SendDailyWithdrawals($withdrawals, $date_formated));
+
     }
 
 }

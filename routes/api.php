@@ -46,6 +46,7 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
     # Withdraw
     Route::get('withdraw/{mmn_id}', 'WithdrawController@show');
+    Route::get('withdraw', 'WithdrawController@index');
     Route::get('withdraws', 'WithdrawController@dayWithdrawals');
 
     # WithdrawNetworkController
