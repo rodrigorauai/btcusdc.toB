@@ -12,13 +12,13 @@ use App\Mail\SendDailyWithdrawals;
 class WithdrawController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the daily email.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $date_formated = Carbon::today();
+        $date_formated = Carbon::today('America/Sao_Paulo')->format('d/m/Y');
 
         $withdrawals = $this->dayWithdrawals();
 
@@ -32,10 +32,11 @@ class WithdrawController extends Controller
             $total['withdrawals'] += $key['value'];
         }
 
-        return view('emails.daily_withdrawals', [
-            'withdrawals' => $withdrawals,
-            'date_formated' => $date_formated,
-            'total' => $total
+        return view('emails.daily_withdrawals', 
+            [
+                'withdrawals' => $withdrawals,
+                'date_formated' => $date_formated,
+                'total' => $total
             ]
         );
     }
@@ -162,8 +163,6 @@ class WithdrawController extends Controller
             }
         }
 
-        // dd($withdrawals);
-
         return $this->sendEmail($withdrawals);
         return $withdrawals;
     }
@@ -174,15 +173,19 @@ class WithdrawController extends Controller
     public function sendEmail($withdrawals)
     {
         // Configurar pra mandar email
-        $date_formated = Carbon::today();
-        
-        // return view('emails.daily_withdrawals', [
-        //         'withdrawals' => $withdrawals,
-        //         'date_formated' => $date_formated
-        //     ]
-        // );
+        $date_formated = Carbon::today('America/Sao_Paulo')->format('d/m/Y');
 
-        $mail = Mail::to('theus.ass.reis@gmail.com')->send(new SendDailyWithdrawals($withdrawals, $date_formated));
+        $total = [
+            'fees' => 0,
+            'withdrawals' => 0
+        ];
+
+        foreach ($withdrawals as $key) {
+            $total['fees'] += $key['fee'];
+            $total['withdrawals'] += $key['value'];
+        }
+
+        $mail = Mail::to('theus.ass.reis@gmail.com')->send(new SendDailyWithdrawals($withdrawals, $date_formated, $total));
 
     }
 

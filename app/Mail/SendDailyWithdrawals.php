@@ -13,16 +13,18 @@ class SendDailyWithdrawals extends Mailable
 
     public $withdrawals;
     public $date_formated;
+    public $total;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($withdrawals, $date_formated)
+    public function __construct($withdrawals, $date_formated, $total)
     {
         $this->withdrawals = $withdrawals;
         $this->date_formated = $date_formated;
+        $this->total = $total;
     }
 
     /**
