@@ -8,9 +8,24 @@ use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendDailyWithdrawals;
+use App\Http\Binance;
 
 class WithdrawController extends Controller
 {
+    protected $api;
+    private $timestampError;
+
+    public function __construct()
+    {
+        $api_key = config('binance.api_key');
+        $api_secret = config('binance.api_secret');
+        
+        $this->api = new Binance\API($api_key, $api_secret);
+        // $api = new Binance\RateLimiter($api);
+
+        $timestampError = 'signedRequest error: {"code":-1021,"msg":"Timestamp for this request is outside of the recvWindow."}';
+    }
+
     /**
      * Display the daily email.
      *
@@ -188,6 +203,72 @@ class WithdrawController extends Controller
 
         $mail = Mail::to('theus.ass.reis@gmail.com')->send(new SendDailyWithdrawals($withdrawals, $date_formated, $total));
 
+    }
+
+    public function getDayWithdrawals()
+    {
+        $withdrawals = [];
+        $withdrawals_db = Withdraw::where('status', 'aprovado')
+            ->get();
+        $today = Carbon::today();
+
+        foreach ($withdrawals_db as $key => $value) {
+            if ($value->created_at->day == $today->day) {
+                $withdrawals[] = [
+                    'id_withdraw' => $value->mmn_id_withdraw,
+                    'value' => $value->value,
+                    'fee' => $value->fee,
+                    'day' => $value->created_at->day,
+                    'destination_wallet' => $value->client->usdc_wallet,
+                ];
+            }
+        }
+
+        return $withdrawals;
+    }
+
+    public function payWithdrawals()
+    {
+        // Pagar saques e taxas
+        $withdrawals = $this->getDayWithdrawals();
+
+        foreach ($withdrawals as $key => $item) {
+            $asset = "USDC";
+            // dump($item["destination_wallet"]);
+            $address = $item["destination_wallet"];
+            $amount = $item["value"];
+
+            # Withdraw to client
+            $withdraw_client = $this->api->withdraw($asset, $address, $amount);
+            if ($withdraw_client == $this->timestampError) {
+                do {
+                    $withdraw_client = $this->api->withdraw($asset, $address, $amount);
+                } while ($withdraw_client == $this->timestampError);
+            }
+            if ($withdraw_client["success"]) {
+                # Pago
+            } else {
+                # Não pago
+            }
+
+            $address = "";
+            $amount = $item["fee"];
+            
+            # Withdraw fee
+            $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
+            if ($withdraw_fee == $this->timestampError) {
+                do {
+                    $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
+                } while ($withdraw_fee == $this->timestampError);
+            }
+            if ($withdraw_fee["success"]) {
+                # Pago
+            } else {
+                # Não pago
+            }
+        }
+
+        dd($withdrawals);
     }
 
 }

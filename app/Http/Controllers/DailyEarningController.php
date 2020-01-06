@@ -122,20 +122,23 @@ class DailyEarningController extends Controller
             # retornando o client
             if (!$check_client) {
                 # **(fluxo do recebeu 1x: não)**
+
                 $client = $this->clientController->store($client);
                 $check_valid = true;
             } else {
                 # **(fluxo do recebeu 1x: sim)**
+
                 # Verificar carteira, se mudou: mandar email
                 # e tambem cancelar o pagamento, cliente verifica com o mmn
                 if ($check_client->usdc_wallet !== $client->usdc_wallet) {
                     # **(mudou carteira: sim)**
+
                     # Carteira esta diferente, mandar email
                     echo "Mandar email".$client->email;
-                    // continue;
                     $check_valid = false;
                 } else {
                     # **(mudou carteira: não)**
+
                     $check_valid = true;
                 }
 
@@ -158,10 +161,10 @@ class DailyEarningController extends Controller
 
             # Withdraw ja existe (quando mudar a carteira do cliente e enviar o saque novamente)
             if (!$check_withdraw_exists) {
-
+                
             }
 
-            # **(verifica status do pagamento (aprovado ou negado), para guardar no banco)**
+            # ** Verifica status do pagamento (aprovado ou negado), para guardar no banco **
             if ($check_valid) {
                 # Status Aprovado
                 $withdraw_stored = $this->withdrawController->store($withdraw);
