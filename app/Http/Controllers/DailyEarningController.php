@@ -193,6 +193,5 @@ class DailyEarningController extends Controller
 
         # Chama função para mandar email para financeiro
         $email = $this->withdrawController->dayWithdrawals();
-        // dd($email);
     }
 }

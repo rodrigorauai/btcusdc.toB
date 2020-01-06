@@ -180,6 +180,7 @@ class WithdrawController extends Controller
             'withdrawals' => 0
         ];
 
+        # TODO: save this values (fee and value) in table of DB
         foreach ($withdrawals as $key) {
             $total['fees'] += $key['fee'];
             $total['withdrawals'] += $key['value'];
