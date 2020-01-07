@@ -22,4 +22,12 @@ class Withdraw extends Model
     {
         return $this->belongsTo('App\Client');
     }
+
+    /**
+     * Get the fees for the withdraw.
+     */
+    public function fees()
+    {
+        return $this->hasMany('App\Fee');
+    }
 }

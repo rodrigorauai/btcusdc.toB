@@ -77,13 +77,14 @@ class WithdrawController extends Controller
     {
         $withdraw = new Withdraw;
         $withdraw->mmn_id_withdraw = $request->mmn_id_withdraw;
+        $withdraw->binance_id = "";
         $withdraw->type = $request->type;
         $withdraw->value = $request->value;
         $withdraw->fee = $request->fee;
         $withdraw->date = $request->date;
         $withdraw->status = $request->status;
         $withdraw->client_id = $request->client->id;
-
+        
         try {
             $withdraw->save();
 
@@ -134,6 +135,10 @@ class WithdrawController extends Controller
 
         $withdraw->status = $request["status"];
 
+        if (array_key_exists('binance_id', $request)) {
+            $withdraw->binance_id = $request["binance_id"];
+        }
+
         try {
             $withdraw->save();
 
@@ -180,7 +185,6 @@ class WithdrawController extends Controller
         }
 
         return $this->sendEmail($withdrawals);
-        return $withdrawals;
     }
 
     /**
@@ -233,6 +237,8 @@ class WithdrawController extends Controller
         // Pagar saques e taxas
         $withdrawals = $this->getDayWithdrawals();
 
+        // dd($withdrawals);
+
         foreach ($withdrawals as $key => $item) {
             $asset = "USDC";
             // dump($item["destination_wallet"]);
@@ -240,18 +246,27 @@ class WithdrawController extends Controller
             $amount = $item["value"];
 
             # Withdraw to client
-            $withdraw_client = $this->api->withdraw($asset, $address, $amount);
-            if ($withdraw_client == $this->timestampError) {
-                do {
-                    $withdraw_client = $this->api->withdraw($asset, $address, $amount);
-                } while ($withdraw_client == $this->timestampError);
-            }
-            if ($withdraw_client["success"]) {
+            // $withdraw_client = $this->api->withdraw($asset, $address, $amount);
+            // if ($withdraw_client == $this->timestampError) {
+            //     do {
+            //         $withdraw_client = $this->api->withdraw($asset, $address, $amount);
+            //     } while ($withdraw_client == $this->timestampError);
+            // }
+
+            # Example of response
+            $withdraw_client = [
+                'success' => true,
+                'msg' => 'not success',
+                'id' => 'fapisdjfoahfoij',
+            ];
+            
+            if ($withdraw_client["msg"] == "success") {
                 # Pago
 
                 $withdraw_formated = [
                     'id_saque' => $item["id_withdraw"],
                     'status' => 'pago',
+                    'binance_id' => $withdraw_client["id"],
                 ];
 
                 $this->update($item["id_withdraw"], $withdraw_formated);
@@ -261,9 +276,8 @@ class WithdrawController extends Controller
                 $withdraw_formated = [
                     'id_saque' => $item["id_withdraw"],
                     'status' => 'nao_pago',
+                    'binance_id' => 'none',
                 ];
-
-                Log::info($withdraw_client);
 
                 $this->update($item["id_withdraw"], $withdraw_formated);
             }
@@ -272,20 +286,33 @@ class WithdrawController extends Controller
             $amount = $item["fee"];
             
             # Withdraw fee
-            $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
-            if ($withdraw_fee == $this->timestampError) {
-                do {
-                    $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
-                } while ($withdraw_fee == $this->timestampError);
-            }
-            if ($withdraw_fee["success"]) {
-                # Pago
-            } else {
-                # Não pago
-            }
+            // $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
+            // if ($withdraw_fee == $this->timestampError) {
+            //     do {
+            //         $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
+            //     } while ($withdraw_fee == $this->timestampError);
+            // }
+
+            # Example of response
+            // $withdraw_fee = [
+            //     'success' => true,
+            //     'msg' => 'not success',
+            //     'id' => 'fapisdjfoahfoij',
+            // ];
+
+            // if ($withdraw_fee["msg"] == "success") {
+            //     # Pago
+
+
+            // } else {
+            //     # Não pago
+            // }
         }
 
-        dd($withdrawals);
+        
+
+        # Chamar post para devolver ao MMN
+        // 
     }
 
 }

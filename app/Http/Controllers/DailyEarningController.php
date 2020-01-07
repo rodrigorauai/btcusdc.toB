@@ -169,15 +169,12 @@ class DailyEarningController extends Controller
                 # Status Aprovado
                 $withdraw_stored = $this->withdrawController->store($withdraw);
 
-                # Formatar para dar o callback para MMN
-                if ($withdraw_stored) {
-                    $status_withdraw = 'aprovado';
+                $status_withdraw = 'aprovado';
 
-                    $withdraw_formated = [
-                        'id_saque' => $withdraw->mmn_id_withdraw,
-                        'status' => $status_withdraw,
-                    ];
-                }
+                $withdraw_formated = [
+                    'id_saque' => $withdraw->mmn_id_withdraw,
+                    'status' => $status_withdraw,
+                ];
             } else {
                 # Status Negado
                 $status_withdraw = 'negado';
@@ -195,6 +192,6 @@ class DailyEarningController extends Controller
         }
 
         # Chama função para mandar email para financeiro
-        $email = $this->withdrawController->dayWithdrawals();
+        $this->withdrawController->dayWithdrawals();
     }
 }
