@@ -33,9 +33,22 @@ class FeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($request)
     {
-        //
+        $fee = new Fee;
+        $fee->withdraw_id = $request->id_withdraw;
+        $fee->value = $request->value;
+        $fee->status = $request->status;
+
+        try {
+            $fee->save();
+
+            return $fee;
+        } catch(QueryException $ex) {
+            return;
+            dd($ex->getMessage());
+            // Note any method of class PDOException can be called on $ex.
+        }
     }
 
     /**

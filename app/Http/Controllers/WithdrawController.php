@@ -10,11 +10,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendDailyWithdrawals;
 use App\Http\Binance;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\FeeController;
 
 class WithdrawController extends Controller
 {
     protected $api;
     private $timestampError;
+    private $feeController;
 
     public function __construct()
     {
@@ -25,6 +27,8 @@ class WithdrawController extends Controller
         // $api = new Binance\RateLimiter($api);
 
         $timestampError = 'signedRequest error: {"code":-1021,"msg":"Timestamp for this request is outside of the recvWindow."}';
+    
+        $this->feeController = new FeeController();
     }
 
     /**
@@ -220,7 +224,8 @@ class WithdrawController extends Controller
         foreach ($withdrawals_db as $key => $value) {
             if ($value->created_at->day == $today->day) {
                 $withdrawals[] = [
-                    'id_withdraw' => $value->mmn_id_withdraw,
+                    'id_withdraw' => $value->id,
+                    'mmn_id_withdraw' => $value->mmn_id_withdraw,
                     'value' => $value->value,
                     'fee' => $value->fee,
                     'day' => $value->created_at->day,
@@ -264,22 +269,22 @@ class WithdrawController extends Controller
                 # Pago
 
                 $withdraw_formated = [
-                    'id_saque' => $item["id_withdraw"],
+                    'id_saque' => $item["mmn_id_withdraw"],
                     'status' => 'pago',
                     'binance_id' => $withdraw_client["id"],
                 ];
 
-                $this->update($item["id_withdraw"], $withdraw_formated);
+                $this->update($item["mmn_id_withdraw"], $withdraw_formated);
             } else {
                 # Não pago
 
                 $withdraw_formated = [
-                    'id_saque' => $item["id_withdraw"],
+                    'id_saque' => $item["mmn_id_withdraw"],
                     'status' => 'nao_pago',
                     'binance_id' => 'none',
                 ];
 
-                $this->update($item["id_withdraw"], $withdraw_formated);
+                $this->update($item["mmn_id_withdraw"], $withdraw_formated);
             }
 
             $address = "";
@@ -294,19 +299,35 @@ class WithdrawController extends Controller
             // }
 
             # Example of response
-            // $withdraw_fee = [
-            //     'success' => true,
-            //     'msg' => 'not success',
-            //     'id' => 'fapisdjfoahfoij',
-            // ];
+            $withdraw_fee = [
+                'success' => true,
+                'msg' => 'success',
+                'id' => 'fapisdjfoahfoij',
+            ];
 
-            // if ($withdraw_fee["msg"] == "success") {
-            //     # Pago
+            if ($withdraw_fee["msg"] == "success") {
+                # Pago
 
+                $fee = json_encode([
+                    'id_withdraw' => $item['id_withdraw'],
+                    'value' => $amount,
+                    'status' => 'pago',
+                ]);
+                $fee = json_decode($fee);
 
-            // } else {
-            //     # Não pago
-            // }
+                $this->feeController->store($fee);
+            } else {
+                # Não pago
+
+                $fee = json_encode([
+                    'id_withdraw' => $item['id_withdraw'],
+                    'value' => $amount,
+                    'status' => 'nao_pago',
+                ]);
+                $fee = json_decode($fee);
+
+                $this->feeController->store($fee);
+            }
         }
 
         
