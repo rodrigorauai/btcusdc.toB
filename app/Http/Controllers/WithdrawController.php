@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendDailyWithdrawals;
 use App\Http\Binance;
+use Illuminate\Support\Facades\Log;
 
 class WithdrawController extends Controller
 {
@@ -247,8 +248,24 @@ class WithdrawController extends Controller
             }
             if ($withdraw_client["success"]) {
                 # Pago
+
+                $withdraw_formated = [
+                    'id_saque' => $item["id_withdraw"],
+                    'status' => 'pago',
+                ];
+
+                $this->update($item["id_withdraw"], $withdraw_formated);
             } else {
                 # Não pago
+
+                $withdraw_formated = [
+                    'id_saque' => $item["id_withdraw"],
+                    'status' => 'nao_pago',
+                ];
+
+                Log::info($withdraw_client);
+
+                $this->update($item["id_withdraw"], $withdraw_formated);
             }
 
             $address = "";
