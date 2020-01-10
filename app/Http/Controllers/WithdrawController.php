@@ -242,11 +242,16 @@ class WithdrawController extends Controller
         // Pagar saques e taxas
         $withdrawals = $this->getDayWithdrawals();
 
+        $withdrawals_executed = [
+            'withdrawals' => [],
+            'fees' => []
+        ];
+
         // dd($withdrawals);
+        // dd($this->api->withdrawHistory());
 
         foreach ($withdrawals as $key => $item) {
             $asset = "USDC";
-            // dump($item["destination_wallet"]);
             $address = $item["destination_wallet"];
             $amount = $item["value"];
 
@@ -260,12 +265,12 @@ class WithdrawController extends Controller
 
             # Example of response
             $withdraw_client = [
-                'success' => true,
-                'msg' => 'not success',
+                'success' => false,
                 'id' => 'fapisdjfoahfoij',
             ];
-            
-            if ($withdraw_client["msg"] == "success") {
+                
+            // dd($withdraw_client);
+            if ($withdraw_client["success"]) {
                 # Pago
 
                 $withdraw_formated = [
@@ -274,7 +279,7 @@ class WithdrawController extends Controller
                     'binance_id' => $withdraw_client["id"],
                 ];
 
-                $this->update($item["mmn_id_withdraw"], $withdraw_formated);
+                // $this->update($item["mmn_id_withdraw"], $withdraw_formated);
             } else {
                 # Não pago
 
@@ -284,10 +289,12 @@ class WithdrawController extends Controller
                     'binance_id' => 'none',
                 ];
 
-                $this->update($item["mmn_id_withdraw"], $withdraw_formated);
+                // $this->update($item["mmn_id_withdraw"], $withdraw_formated);
             }
 
-            $address = "";
+            array_push($withdrawals_executed['withdrawals'], $withdraw_formated);
+
+            $address = "0x947714dBEA569A1B53d7Db2698A18Fe783608953";
             $amount = $item["fee"];
             
             # Withdraw fee
@@ -300,12 +307,11 @@ class WithdrawController extends Controller
 
             # Example of response
             $withdraw_fee = [
-                'success' => true,
-                'msg' => 'success',
+                'success' => false,
                 'id' => 'fapisdjfoahfoij',
             ];
 
-            if ($withdraw_fee["msg"] == "success") {
+            if ($withdraw_fee["success"]) {
                 # Pago
 
                 $fee = json_encode([
@@ -315,7 +321,13 @@ class WithdrawController extends Controller
                 ]);
                 $fee = json_decode($fee);
 
-                $this->feeController->store($fee);
+                $fee_formated = [
+                    'id_withdraw' => $item['id_withdraw'],
+                    'value' => $amount,
+                    'status' => 'pago'
+                ];
+
+                // $this->feeController->store($fee);
             } else {
                 # Não pago
 
@@ -326,13 +338,21 @@ class WithdrawController extends Controller
                 ]);
                 $fee = json_decode($fee);
 
-                $this->feeController->store($fee);
+                $fee_formated = [
+                    'id_withdraw' => $item['id_withdraw'],
+                    'value' => $amount,
+                    'status' => 'nao_pago'
+                ];
+
+                // $this->feeController->store($fee);
             }
+
+            array_push($withdrawals_executed['fees'], $fee_formated);
         }
 
-        
+        dd($withdrawals_executed);
 
-        # Chamar post para devolver ao MMN
+        # Chamar POST para devolver ao MMN
         // 
     }
 
