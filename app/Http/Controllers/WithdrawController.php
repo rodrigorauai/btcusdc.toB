@@ -15,7 +15,6 @@ use App\Http\Controllers\FeeController;
 class WithdrawController extends Controller
 {
     protected $api;
-    private $timestampError;
     private $feeController;
 
     public function __construct()
@@ -26,8 +25,6 @@ class WithdrawController extends Controller
         $this->api = new Binance\API($api_key, $api_secret);
         // $api = new Binance\RateLimiter($api);
 
-        $timestampError = 'signedRequest error: {"code":-1021,"msg":"Timestamp for this request is outside of the recvWindow."}';
-    
         $this->feeController = new FeeController();
     }
 
@@ -237,6 +234,13 @@ class WithdrawController extends Controller
         return $withdrawals;
     }
 
+    public function withdraw()
+    {
+        // return 'a';
+        
+        return $this->api->withdraw("USDC", "0xee92Feb8f9e8C411930C5Defb94C2BEb28dD870a", 2);
+    }
+
     public function payWithdrawals()
     {
         // Pagar saques e taxas
@@ -256,18 +260,13 @@ class WithdrawController extends Controller
             $amount = $item["value"];
 
             # Withdraw to client
-            // $withdraw_client = $this->api->withdraw($asset, $address, $amount);
-            // if ($withdraw_client == $this->timestampError) {
-            //     do {
-            //         $withdraw_client = $this->api->withdraw($asset, $address, $amount);
-            //     } while ($withdraw_client == $this->timestampError);
-            // }
+            $withdraw_client = $this->api->withdraw($asset, $address, $amount);
 
             # Example of response
-            $withdraw_client = [
-                'success' => false,
-                'id' => 'fapisdjfoahfoij',
-            ];
+            // $withdraw_client = [
+            //     'success' => false,
+            //     'id' => 'fapisdjfoahfoij',
+            // ];
                 
             // dd($withdraw_client);
             if ($withdraw_client["success"]) {
@@ -279,7 +278,7 @@ class WithdrawController extends Controller
                     'binance_id' => $withdraw_client["id"],
                 ];
 
-                // $this->update($item["mmn_id_withdraw"], $withdraw_formated);
+                $this->update($item["mmn_id_withdraw"], $withdraw_formated);
             } else {
                 # Não pago
 
@@ -289,27 +288,22 @@ class WithdrawController extends Controller
                     'binance_id' => 'none',
                 ];
 
-                // $this->update($item["mmn_id_withdraw"], $withdraw_formated);
+                $this->update($item["mmn_id_withdraw"], $withdraw_formated);
             }
 
             array_push($withdrawals_executed['withdrawals'], $withdraw_formated);
 
-            $address = "0x947714dBEA569A1B53d7Db2698A18Fe783608953";
+            $address = "0xee92Feb8f9e8C411930C5Defb94C2BEb28dD870a";
             $amount = $item["fee"];
             
             # Withdraw fee
-            // $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
-            // if ($withdraw_fee == $this->timestampError) {
-            //     do {
-            //         $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
-            //     } while ($withdraw_fee == $this->timestampError);
-            // }
+            $withdraw_fee = $this->api->withdraw($asset, $address, $amount);
 
             # Example of response
-            $withdraw_fee = [
-                'success' => false,
-                'id' => 'fapisdjfoahfoij',
-            ];
+            // $withdraw_fee = [
+            //     'success' => false,
+            //     'id' => 'fapisdjfoahfoij',
+            // ];
 
             if ($withdraw_fee["success"]) {
                 # Pago
@@ -327,7 +321,7 @@ class WithdrawController extends Controller
                     'status' => 'pago'
                 ];
 
-                // $this->feeController->store($fee);
+                $this->feeController->store($fee);
             } else {
                 # Não pago
 
@@ -344,7 +338,7 @@ class WithdrawController extends Controller
                     'status' => 'nao_pago'
                 ];
 
-                // $this->feeController->store($fee);
+                $this->feeController->store($fee);
             }
 
             array_push($withdrawals_executed['fees'], $fee_formated);
