@@ -339,7 +339,7 @@ class WithdrawController extends Controller
             array_push($withdrawals_executed['fees'], $fee_formated);
         }
 
-        dd($withdrawals_executed);
+        return $withdrawals_executed;
 
         # Chamar POST para devolver ao MMN
         // 

@@ -49,7 +49,7 @@ Route::group(['middleware' => 'auth.jwt'], function () {
     Route::get('withdraw', 'WithdrawController@index');
     Route::get('withdraws', 'WithdrawController@dayWithdrawals');
     Route::get('daywithdraws', 'WithdrawController@getDayWithdrawals');
-    Route::get('pay/withdrawals', 'WithdrawController@payWithdrawals');
+    Route::post('pay/withdrawals', 'WithdrawController@payWithdrawals'); # Paga os saques solicitados no dia
     Route::get('pay/withdraw', 'WithdrawController@withdraw');
 
     # WithdrawNetworkController
