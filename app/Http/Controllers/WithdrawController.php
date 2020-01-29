@@ -237,7 +237,7 @@ class WithdrawController extends Controller
     public function withdraw()
     {
         // return 'a';
-        
+
         return $this->api->withdraw("USDC", "0xee92Feb8f9e8C411930C5Defb94C2BEb28dD870a", 2);
     }
 
@@ -250,9 +250,6 @@ class WithdrawController extends Controller
             'withdrawals' => [],
             'fees' => []
         ];
-
-        // dd($withdrawals);
-        // dd($this->api->withdrawHistory());
 
         foreach ($withdrawals as $key => $item) {
             $asset = "USDC";
@@ -267,8 +264,6 @@ class WithdrawController extends Controller
             //     'success' => false,
             //     'id' => 'fapisdjfoahfoij',
             // ];
-                
-            // dd($withdraw_client);
             if ($withdraw_client["success"]) {
                 # Pago
 
